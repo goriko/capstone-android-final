@@ -15,11 +15,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/textViewVerified"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Verify your email. Please check your email address."/>
+
         <Button
             android:id="@+id/buttonProceed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Proceed"/>
+            android:text="Proceed"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 

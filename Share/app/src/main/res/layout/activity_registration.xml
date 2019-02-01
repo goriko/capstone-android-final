@@ -19,31 +19,33 @@
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Email"/>
+            android:hint="Email"/>
 
         <EditText
             android:id="@+id/editTextPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Password"/>
+            android:hint="Password"
+            android:inputType="textPassword"/>
 
         <EditText
             android:id="@+id/editTextPassword2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Verify Password"/>
+            android:hint="Verify Password"
+            android:inputType="textPassword"/>
 
         <EditText
             android:id="@+id/editTextFName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="First Name"/>
+            android:hint="First Name"/>
 
         <EditText
             android:id="@+id/editTextLName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Last Name"/>
+            android:hint="Last Name"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -60,13 +62,13 @@
             android:id="@+id/editTextNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Number"/>
+            android:hint="Number"/>
 
         <EditText
             android:id="@+id/editTextGuardianNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Guardian number"/>
+            android:hint="Guardian number"/>
 
         <Button
             android:id="@+id/buttonFile"

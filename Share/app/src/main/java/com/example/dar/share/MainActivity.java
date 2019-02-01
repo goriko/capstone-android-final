@@ -29,9 +29,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //checks if user verified email
             if(firebaseAuth.getCurrentUser().isEmailVerified()){
                 finish();
-                //startActivity(new Intent(getApplicationContext(), NavBarActivity.class));
+                startActivity(new Intent(getApplicationContext(), NavBarActivity.class));
             }else{
-                finish();
                 startActivity(new Intent(getApplicationContext(), EmailVerificationActivity.class));
             }
         }
@@ -47,5 +46,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else{
             startActivity(new Intent(this, RegistrationActivity.class));
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        System.exit(0);
     }
 }
