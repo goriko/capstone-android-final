@@ -1,87 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegistrationActivity">
 
-    <LinearLayout
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/register_blurredbckgrnd"
+        android:scaleType="centerCrop"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="82px"
+        android:src= "@drawable/register_cabshare"
+        android:scaleType="fitCenter"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp"
+        android:id="@+id/formLogo"/>
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_below="@id/formLogo"
+        android:id="@+id/scrollView"
+        >
 
-        <EditText
-            android:id="@+id/editTextEmail"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
 
-        <EditText
-            android:id="@+id/editTextPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword"/>
+            >
 
-        <EditText
-            android:id="@+id/editTextPassword2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Verify Password"
-            android:inputType="textPassword"/>
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/rounded_white"
+                android:hint="Email Address"
+                android:paddingStart="10dp"
+                android:textColorHighlight="@android:color/background_light"
+                android:textSize="14sp"
+                tools:textColorHint="@color/white" />
 
-        <EditText
-            android:id="@+id/editTextFName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="First Name"/>
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/rounded_white"
+                android:hint="Password"
+                android:paddingStart="10dp"
+                android:textColorHighlight="@android:color/background_light"
+                android:textSize="14sp"
+                tools:textColorHint="@color/white" />
+            <EditText
+                android:id="@+id/editTextPassword2"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/rounded_white"
+                android:hint="Verify Password"
+                android:paddingStart="10dp"
+                android:textColorHighlight="@android:color/background_light"
+                android:textSize="14sp"
+                tools:textColorHint="@color/white" />
 
-        <EditText
-            android:id="@+id/editTextLName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Last Name"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="GENDER"/>
+            <EditText
+                android:id="@+id/editTextFName"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/rounded_white"
+                android:hint="First Name"
+                android:paddingStart="10dp"
+                android:textColorHighlight="@android:color/background_light"
+                android:textSize="14sp"
+                tools:textColorHint="@color/white" />
 
-        <Spinner
-            android:id="@+id/spinnerGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"/>
+            <EditText
+                android:id="@+id/editTextLName"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/rounded_white"
+                android:hint="Last Name"
+                android:paddingStart="10dp"
+                android:textColorHighlight="@android:color/background_light"
+                android:textSize="14sp"
+                tools:textColorHint="@color/white" />
 
-        <EditText
-            android:id="@+id/editTextNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Number"/>
 
-        <EditText
-            android:id="@+id/editTextGuardianNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Guardian number"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_below="@id/scrollView"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp">
 
-        <Button
-            android:id="@+id/buttonFile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="UPLOAD PHOTO"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gender"
+                    android:id="@+id/textView"
+                    android:textColor="#ffffff"/>
 
-        <Button
-            android:id="@+id/buttonProceed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="PROCEED"/>
 
-    </LinearLayout>
+                <Spinner
+                    android:id="@+id/spinnerGender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown"
+                    android:spinnerMode="dropdown"/>
 
-</android.support.constraint.ConstraintLayout>
+            </LinearLayout>
+
+
+
+            <EditText
+                android:id="@+id/editTextNumber"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/rounded_white"
+                android:hint="Number"
+                android:paddingStart="10dp"
+                android:textColorHighlight="@android:color/background_light"
+                android:textSize="14sp"
+                tools:textColorHint="@color/white" />
+            <EditText
+                android:id="@+id/editTextGuardianNumber"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/rounded_white"
+                android:hint="Guardian's Number"
+                android:paddingStart="10dp"
+                android:textColorHighlight="@android:color/background_light"
+                android:textSize="14sp"
+                tools:textColorHint="@color/white" />
+
+            <Button
+                android:id="@+id/buttonFile"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textColor="@color/white"
+                android:text="Upload a photo"
+                android:textStyle="normal"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/yellow_button"
+                android:layout_gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                />
+
+
+
+
+            <Button
+                android:id="@+id/buttonProceed"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textColor="@color/white"
+                android:text="Proceed"
+                android:textStyle="normal"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/yellow_button"
+                android:layout_gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</RelativeLayout>

@@ -1,32 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/login_mainbckgrnd"
+        android:scaleType="centerCrop"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="280px"
+        android:src= "@drawable/login_logo"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="15dp"
+        android:id="@+id/logoMain"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="82px"
+        android:src= "@drawable/login_cabshare"
+        android:scaleType="fitCenter"
+        android:layout_marginBottom="30dp"
+        android:layout_below="@id/logoMain"
+        android:id="@+id/wordLogo"/>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_below="@id/wordLogo"
+        >
 
-        <Button
-            android:id="@+id/buttonLogin"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
 
-        <Button
-            android:id="@+id/buttonRegister"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SignUp"/>
+            >
 
-    </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+
+
+            <Button
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="Login"
+                android:textStyle="normal"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/yellow_button"
+                android:layout_gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#ffffff"
+                />
+
+            <Button
+                android:id="@+id/buttonRegister"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="Sign up"
+                android:textStyle="normal"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/yellow_button"
+                android:layout_gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#ffffff"
+                />
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
