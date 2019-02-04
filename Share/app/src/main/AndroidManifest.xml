@@ -28,7 +28,7 @@
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".EmailVerificationActivity" />
         <activity android:name=".PinNumberActivity" />
-        <activity android:name=".NavBarActivity"></activity>
+        <activity android:name=".NavBarActivity"/>
     </application>
 
 </manifest>
