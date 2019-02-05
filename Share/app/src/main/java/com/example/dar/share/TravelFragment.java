@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,6 @@ import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode;
 
 import java.util.List;
 
-import static com.example.dar.share.NavBarActivity.sContext;
-
 public class TravelFragment extends Fragment implements OnMapReadyCallback,
         LocationEngineListener,
         PermissionsListener {
@@ -50,6 +49,8 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_travel, container, false);
 
+        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         Mapbox.getInstance(getActivity(), getString(R.string.access_token));
         mapView = (MapView) rootView.findViewById(R.id.mapView);
         mapView.getMapAsync(this::onMapReady);
@@ -59,7 +60,7 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
 
     //mapbox
     private void enableLocation(){
-        if(PermissionsManager.areLocationPermissionsGranted(sContext)){
+        if(PermissionsManager.areLocationPermissionsGranted(getActivity().getApplicationContext())){
             initializeLocationEngine();
             initializeLocationLayer();
         }else{
@@ -75,7 +76,7 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void initializeLocationEngine(){
-        locationEngine = new LocationEngineProvider(sContext).obtainBestLocationEngineAvailable();
+        locationEngine = new LocationEngineProvider(getActivity().getApplicationContext()).obtainBestLocationEngineAvailable();
         locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
         locationEngine.activate();
 

@@ -18,16 +18,12 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class NavBarActivity extends AppCompatActivity {
 
-    public static Context sContext;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_bar);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-
-        sContext = getApplicationContext();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
                 new TravelFragment()).commit();
