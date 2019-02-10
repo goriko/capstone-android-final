@@ -16,6 +16,70 @@
             android:layout_height="match_parent"
             mapbox:mapbox_cameraZoom="15"/>
 
+        <android.support.v7.widget.CardView
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:weightSum="2"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/editTextOrigin"
+                        android:imeOptions="actionSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/gray"
+                        android:hint="Enter your Place of Origin"
+                        android:textColorHighlight="@android:color/background_light"
+                        android:textSize="14sp" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/editTextDestination"
+                        android:imeOptions="actionSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/gray"
+                        android:hint="Enter your Destinaton"
+                        android:textColorHighlight="@android:color/background_light"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/buttonFind"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/register_button"
+                    android:text="Locate"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
     </RelativeLayout>
 
 </FrameLayout>

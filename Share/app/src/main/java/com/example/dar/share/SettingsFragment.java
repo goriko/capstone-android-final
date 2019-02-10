@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -19,7 +21,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private Fragment fragment = null;
 
-    private Button buttonProfile, buttonPassword, buttonPin, buttonLogout;
+    private CardView cardViewProfile, cardViewLogout;
+    private LinearLayout linearLayoutPassword, linearLayoutPin;
 
     private FirebaseAuth firebaseAuth;
 
@@ -30,15 +33,15 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        buttonProfile = (Button) rootView.findViewById(R.id.buttonProfile);
-        buttonPassword = (Button) rootView.findViewById(R.id.buttonPassword);
-        buttonPin = (Button) rootView.findViewById(R.id.buttonPin);
-        buttonLogout = (Button) rootView.findViewById(R.id.buttonLogout);
+        cardViewProfile = (CardView) rootView.findViewById(R.id.cardViewProfile);
+        linearLayoutPassword = (LinearLayout) rootView.findViewById(R.id.linearLayoutPassword);
+        linearLayoutPin = (LinearLayout) rootView.findViewById(R.id.linearLayoutPin);
+        cardViewLogout = (CardView) rootView.findViewById(R.id.cardViewLogout);
 
-        buttonProfile.setOnClickListener(this);
-        buttonPassword.setOnClickListener(this);
-        buttonPin.setOnClickListener(this);
-        buttonLogout.setOnClickListener(this);
+        cardViewProfile.setOnClickListener(this);
+        linearLayoutPassword.setOnClickListener(this);
+        linearLayoutPin.setOnClickListener(this);
+        cardViewLogout.setOnClickListener(this);
 
         return rootView;
     }
@@ -57,16 +60,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v == buttonProfile){
+        if (v == cardViewProfile){
             fragment = new EditProfileFragment();
             replaceFragment(fragment);
-        }else if (v == buttonPassword){
+        }else if (v == linearLayoutPassword){
             fragment = new ChangePasswordFragment();
             replaceFragment(fragment);
-        }else if (v == buttonPin){
+        }else if (v == linearLayoutPin){
             fragment = new ChangePinFragment();
             replaceFragment(fragment);
-        }else if (v == buttonLogout){
+        }else if (v == cardViewLogout){
             logout();
         }
     }

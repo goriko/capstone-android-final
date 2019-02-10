@@ -1,6 +1,7 @@
 package com.example.dar.share;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,14 +9,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +45,8 @@ public class InsideHistoryFragment extends Fragment {
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
 
+    private ProgressDialog progressDialog;
+
     public InsideHistoryFragment(String id){
         this.Id = id;
     }
@@ -47,6 +55,11 @@ public class InsideHistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_inside_history, container, false);
+
+        progressDialog = new ProgressDialog(this.getContext());
+        progressDialog.setMessage("Loading ....");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(Id);
         storageReference = FirebaseStorage.getInstance().getReference("travel/" + Id + ".jpg");
@@ -141,8 +154,8 @@ public class InsideHistoryFragment extends Fragment {
                         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         DisplayMetrics dm = new DisplayMetrics();
                         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-
                         imageView.setImageBitmap(bm);
+                        progressDialog.dismiss();
                     }
                 });
 

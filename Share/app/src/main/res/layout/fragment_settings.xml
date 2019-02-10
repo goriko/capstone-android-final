@@ -54,6 +54,7 @@
             android:rowCount="4">
 
             <android.support.v7.widget.CardView
+                android:id="@+id/cardViewProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp">
@@ -80,7 +81,6 @@
                             android:layout_marginTop="10dp">
 
                             <Button
-                                android:id="@+id/buttonProfile"
                                 android:layout_width="36dp"
                                 android:layout_height="36dp"
                                 android:layout_marginTop="10dp"
@@ -204,12 +204,12 @@
 
 
                         <LinearLayout
+                            android:id="@+id/linearLayoutPassword"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp">
 
                             <Button
-                                android:id="@+id/buttonPassword"
                                 android:layout_width="36dp"
                                 android:layout_height="36dp"
                                 android:layout_marginTop="10dp"
@@ -270,12 +270,12 @@
 
 
                         <LinearLayout
+                            android:id="@+id/linearLayoutPin"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp">
 
                             <Button
-                                android:id="@+id/buttonPin"
                                 android:layout_width="36dp"
                                 android:layout_height="36dp"
                                 android:layout_marginTop="10dp"/>
@@ -374,6 +374,7 @@
             android:rowCount="4">
 
             <android.support.v7.widget.CardView
+                android:id="@+id/cardViewLogout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp">
@@ -400,7 +401,6 @@
                             android:layout_marginTop="10dp">
 
                             <Button
-                                android:id="@+id/buttonLogout"
                                 android:layout_width="36dp"
                                 android:layout_height="36dp"
                                 android:layout_marginTop="10dp"
