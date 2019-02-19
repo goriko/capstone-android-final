@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,13 +34,12 @@ import com.google.firebase.database.ValueEventListener;
 @SuppressLint("ValidFragment")
 public class RoomFragment extends Fragment implements View.OnClickListener {
 
-    private Integer x = 0;
+    private Integer x = 0, departureHour, departureMinute;
     private String[] str = new String[100];
-    private String starting, destination;
+    private String origin, destination;
 
     private View rootView;
 
-    private Button buttonSearch;
     private GridLayout gridView;
     private Fragment fragment = null;
 
@@ -46,19 +47,23 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
 
+    public RoomFragment(String origin, String destination, Integer departureHour, Integer departureMinute){
+        this.origin = origin;
+        this.destination = destination;
+        this.departureHour = departureHour;
+        this.departureMinute = departureMinute;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_room, container, false);
-
-        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         progressDialog = new ProgressDialog(this.getContext());
         progressDialog.setMessage("Loading ....");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        buttonSearch = (Button) rootView.findViewById(R.id.buttonSearch);
         gridView = (GridLayout) rootView.findViewById(R.id.layout);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("travel");
@@ -68,9 +73,17 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 gridView.removeAllViews();
                 for (DataSnapshot data: dataSnapshot.getChildren()){
                     if(data.child("Available").getValue().toString().equals("1")){
-                        x++;
-                        layout(x,data);
+                        if (data.child("DestinationString").getValue().toString().equals(destination) &&
+                                data.child("OriginString").getValue().toString().equals(origin)){
+                            x++;
+                            layout(x,data);
+                        }
                     }
+                }
+                if (x == 0){
+                    Toast.makeText(getActivity().getApplicationContext(), "No rooms found", Toast.LENGTH_LONG).show();
+                    Fragment fragment = new SearchRoomFragment();
+                    replaceFragment(fragment);
                 }
                 progressDialog.dismiss();
             }
@@ -81,13 +94,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        buttonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment fragment = new SearchRoomFragment();
-                replaceFragment(fragment);
-            }
-        });
         return rootView;
     }
 

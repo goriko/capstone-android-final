@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +32,8 @@ public class SearchRoomFragment extends Fragment {
     private Button buttonTime, buttonFind;
     private AutoCompleteTextView editTextOrigin, editTextDestination;
 
-    private Integer departureHour;
-    private Integer departureMinute;
+    private Integer departureHour = null;
+    private Integer departureMinute = null;
 
     private PlaceAutocompleteAdapter placeAutocompleteAdapter;
     private static final LatLngBounds latLngBounds = new LatLngBounds(new com.google.android.gms.maps.model.LatLng(-40, -168), new com.google.android.gms.maps.model.LatLng(71, 136));
@@ -41,6 +42,8 @@ public class SearchRoomFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search_room, container, false);
+
+        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         textViewTime = (TextView) rootView.findViewById(R.id.textViewTime);
         buttonTime = (Button) rootView.findViewById(R.id.buttonTime);
@@ -65,8 +68,12 @@ public class SearchRoomFragment extends Fragment {
         buttonFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragment = new RoomFragment();
-                replaceFragment(fragment);
+                if (!editTextOrigin.getText().toString().equals("") && !editTextDestination.getText().toString().equals("")){
+                    Fragment fragment = new RoomFragment(editTextOrigin.getText().toString(), editTextDestination.getText().toString(), departureHour, departureMinute);
+                    replaceFragment(fragment);
+                }else{
+                    Toast.makeText(NavBarActivity.sContext, "Please enter origin and destination addresses", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

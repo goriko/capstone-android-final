@@ -47,7 +47,7 @@ public class NavBarActivity extends AppCompatActivity {
                         if (roomId != null){
                             selectedFragment = new InsideRoomFragment(roomId, roomStatus);
                         }else{
-                            selectedFragment = new RoomFragment();
+                            selectedFragment = new SearchRoomFragment();
                         }
                         break;
                     case R.id.nav_history:
@@ -82,7 +82,7 @@ public class NavBarActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             //delete();
                             roomId = roomStatus = null;
-                            Fragment fragment = new RoomFragment();
+                            Fragment fragment = new TravelFragment();
                             replaceFragment(fragment);
                         }
                     });
@@ -133,7 +133,7 @@ public class NavBarActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 //delete();
                                 roomId = roomStatus = null;
-                                Fragment fragment = new RoomFragment();
+                                Fragment fragment = new TravelFragment();
                                 replaceFragment(fragment);
                             }
                         });

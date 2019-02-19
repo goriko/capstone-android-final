@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
 public class InsideRoomFragment extends Fragment {
@@ -23,6 +24,8 @@ public class InsideRoomFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_inside_room, container, false);
+
+        Toast.makeText(NavBarActivity.sContext, NavBarActivity.roomId.toString(), Toast.LENGTH_SHORT);
 
         return rootView;
     }
