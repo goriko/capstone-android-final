@@ -33,14 +33,18 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
+            android:layout_marginEnd="30dp">
 
-            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACCOUNT INFORMATION"
+                android:textColor="@color/white"/>
 
             <EditText
                 android:id="@+id/editTextEmail"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="28dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
@@ -54,7 +58,7 @@
             <EditText
                 android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="28dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
@@ -67,8 +71,8 @@
             <EditText
                 android:id="@+id/editTextPassword2"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginBottom="10dp"
+                android:layout_height="28dp"
+                android:layout_marginBottom="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
                 android:background="@drawable/rounded_white"
@@ -79,10 +83,15 @@
                 tools:textColorHint="@color/white" />
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PERSONAL INFORMATION"
+                android:textColor="@color/white"/>
             <EditText
                 android:id="@+id/editTextFName"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="28dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
@@ -96,7 +105,7 @@
             <EditText
                 android:id="@+id/editTextLName"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="28dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
@@ -114,7 +123,8 @@
                 android:orientation="horizontal"
                 android:layout_below="@id/scrollView"
                 android:paddingLeft="50dp"
-                android:paddingRight="50dp">
+                android:paddingRight="50dp"
+                android:layout_marginBottom="15dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -127,18 +137,22 @@
                 <Spinner
                     android:id="@+id/spinnerGender"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="35dp"
                     android:background="@android:drawable/btn_dropdown"
                     android:spinnerMode="dropdown"/>
 
             </LinearLayout>
 
 
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CONTACT INFORMATION"
+                android:textColor="@color/white"/>
             <EditText
                 android:id="@+id/editTextNumber"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="28dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
@@ -151,8 +165,8 @@
             <EditText
                 android:id="@+id/editTextGuardianNumber"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginBottom="10dp"
+                android:layout_height="28dp"
+                android:layout_marginBottom="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
                 android:background="@drawable/rounded_white"
@@ -162,10 +176,15 @@
                 android:textSize="14sp"
                 tools:textColorHint="@color/white" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PROFILE PHOTO"
+                android:textColor="@color/white"/>
             <Button
                 android:id="@+id/buttonFile"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="35dp"
                 android:textColor="@color/white"
                 android:text="Upload a photo"
                 android:textStyle="normal"
@@ -184,7 +203,7 @@
             <Button
                 android:id="@+id/buttonProceed"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="35dp"
                 android:textColor="@color/white"
                 android:text="Proceed"
                 android:textStyle="normal"
@@ -195,7 +214,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="40dp"
                 />
 
         </LinearLayout>

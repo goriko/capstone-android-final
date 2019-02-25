@@ -26,70 +26,71 @@
         />
 
     <ImageView
+        android:id="@+id/Logo"
         android:layout_width="wrap_content"
-        android:layout_height="280px"
-        android:layout_marginTop="10dp"
-        android:src= "@drawable/emailver_icon"
+        android:layout_height="300px"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="-40dp"
         android:scaleType="fitCenter"
-        android:layout_below="@id/cabshareLogo"
-        android:id="@+id/Logo"/>
+        android:src="@drawable/emailver_iconb" />
 
-
-    <ScrollView
-        android:id="@+id/scrollView"
+    <LinearLayout
+        android:id="@+id/square"
         android:layout_width="match_parent"
-
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="30dp"
+        android:layout_below="@+id/Logo"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/white_solid"
 
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:background="@drawable/white_fin">
+        >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical"
+        <TextView
+            android:id="@+id/textViewVerified"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="Verify your email. Please Check your email address"
+            android:textColor="#ffffff"
 
-
-            >
-
-
-
-            <TextView
-                android:id="@+id/textViewVerified"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:layout_weight="1"
-                android:gravity="left"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="Verify your email. Please Check your email address"
-                android:textColor="#ffffff"
-
-                />
+            />
 
 
-            <Button
-                android:id="@+id/buttonProceed"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="50dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/yellow_button"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="Proceed"
-                android:textColor="@color/white"
-                android:textStyle="normal" />
 
-        </LinearLayout>
 
-    </ScrollView>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonProceed"
+        android:layout_width="269dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/square"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+       android:layout_marginTop="-20dp"
+        android:background="@drawable/yellow_button"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="Proceed"
+        android:textColor="@color/white"
+        android:textStyle="normal" />
+
+
+
+
+
+
+
+
+
 
 </RelativeLayout>

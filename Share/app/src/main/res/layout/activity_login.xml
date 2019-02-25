@@ -9,7 +9,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/login_mainbckgrnd"
+        android:src="@drawable/register_blurredbckgrnd"
         android:scaleType="centerCrop"/>
     <ImageView
         android:layout_width="wrap_content"
@@ -50,13 +50,11 @@
             <EditText
                 android:id="@+id/editTextEmail"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="30dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
                 android:background="@drawable/rounded_white"
-                android:drawableLeft="@drawable/ic_user_icon"
-                android:drawablePadding="5dp"
                 android:hint="Email"
                 android:paddingStart="10dp"
                 android:textColorHighlight="@android:color/background_light"
@@ -67,13 +65,11 @@
             <EditText
                 android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="30dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
                 android:background="@drawable/rounded_white"
-                android:drawableLeft="@drawable/ic_pass_icon"
-                android:drawablePadding="5dp"
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:paddingStart="10dp"
@@ -85,7 +81,7 @@
             <Button
                 android:id="@+id/buttonLogin"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="35dp"
                 android:text="Login"
                 android:textStyle="normal"
                 android:layout_marginStart="15dp"
@@ -94,7 +90,7 @@
                 android:layout_gravity="center"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:textColor="#ffffff"
                 />
