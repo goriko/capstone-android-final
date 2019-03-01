@@ -40,6 +40,13 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/buttonCreate"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="create room"
+                android:layout_alignParentRight="true"/>
+
         </RelativeLayout>
         <ScrollView
             android:layout_width="match_parent"

@@ -1,9 +1,14 @@
 package com.example.dar.share;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +28,7 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -30,15 +36,34 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.geojson.Point;
+import com.mapbox.geojson.utils.PolylineUtils;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @SuppressLint("ValidFragment")
 public class RoomFragment extends Fragment implements View.OnClickListener {
 
-    private Integer x = 0, departureHour, departureMinute;
+    private Integer x = 0, departureHour, departureMinute, fareFrom, fareTo, estimatedTravelTime;
     private String[] str = new String[100];
-    private String origin, destination;
+    private String originString, destinationString;
+    private LatLng originLatLng, destinationLatLng;
 
     private View rootView;
+    private Button buttonCreate;
 
     private GridLayout gridView;
     private Fragment fragment = null;
@@ -47,9 +72,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
 
-    public RoomFragment(String origin, String destination, Integer departureHour, Integer departureMinute){
-        this.origin = origin;
-        this.destination = destination;
+    public RoomFragment(String origin, LatLng originLatLng, String destination, LatLng destinationLatLng, Integer departureHour, Integer departureMinute){
+        this.originString = origin;
+        this.originLatLng = originLatLng;
+        this.destinationString = destination;
+        this.destinationLatLng = destinationLatLng;
         this.departureHour = departureHour;
         this.departureMinute = departureMinute;
     }
@@ -65,25 +92,38 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         progressDialog.show();
 
         gridView = (GridLayout) rootView.findViewById(R.id.layout);
+        buttonCreate = (Button) rootView.findViewById(R.id.buttonCreate);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("travel");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 gridView.removeAllViews();
+                LatLng userOrigin = new LatLng(convert(originLatLng.getLatitude()), convert(originLatLng.getLongitude()));
+                LatLng userDestination = new LatLng(convert(destinationLatLng.getLatitude()), convert(destinationLatLng.getLongitude()));
                 for (DataSnapshot data: dataSnapshot.getChildren()){
                     if(data.child("Available").getValue().toString().equals("1")){
-                        if (data.child("DestinationString").getValue().toString().equals(destination) &&
-                                data.child("OriginString").getValue().toString().equals(origin)){
-                            x++;
-                            layout(x,data);
+                        LatLng dataOrigin = new LatLng(convert(Double.parseDouble(data.child("Origin").child("latitude").getValue().toString())), convert(Double.parseDouble(data.child("Origin").child("longitude").getValue().toString())));
+                        LatLng dataDestination = new LatLng(convert(Double.parseDouble(data.child("Destination").child("latitude").getValue().toString())), convert(Double.parseDouble(data.child("Destination").child("longitude").getValue().toString())));
+                        if (dataOrigin.equals(userOrigin) && dataDestination.equals(userDestination)) {
+                            if (departureHour == null) {
+                                x++;
+                                layout(x, data);
+                            } else {
+                                if (data.child("DepartureTime").child("DepartureHour").getValue() != null && data.child("DepartureTime").child("DepartureMinute").getValue() != null){
+                                    Integer hour = Integer.parseInt(data.child("DepartureTime").child("DepartureHour").getValue().toString());
+                                    Integer minute = Integer.parseInt(data.child("DepartureTime").child("DepartureMinute").getValue().toString());
+                                    if (departureHour == hour && departureMinute == minute){
+                                        x++;
+                                        layout(x,data);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
                 if (x == 0){
-                    Toast.makeText(getActivity().getApplicationContext(), "No rooms found", Toast.LENGTH_LONG).show();
-                    Fragment fragment = new SearchRoomFragment();
-                    replaceFragment(fragment);
+                    Toast.makeText(NavBarActivity.sContext, "No rooms found", Toast.LENGTH_LONG).show();
                 }
                 progressDialog.dismiss();
             }
@@ -91,6 +131,17 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        buttonCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (departureHour == null){
+                    setTime();
+                }else{
+                    geoLocate();
+                }
             }
         });
 
@@ -224,7 +275,9 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         LinearLayout.LayoutParams textParams11 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         textParams11.gravity = Gravity.RIGHT;
         textView11.setLayoutParams(textParams11);
-        textView11.setText("Php. "+data.child("MinimumFare").getValue().toString()+"-"+data.child("MaximumFare").getValue().toString());
+        if (data.child("MinimumFare").getValue() != null && data.child("MaximumFare").getValue() != null){
+            textView11.setText("Php. "+data.child("MinimumFare").getValue().toString()+"-"+data.child("MaximumFare").getValue().toString());
+        }
         textView11.setTypeface(Typeface.DEFAULT_BOLD);
         textView11.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.colorYellow));
         textView11.setTextSize(TypedValue.COMPLEX_UNIT_SP, (float) 15.5);
@@ -272,17 +325,96 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         Integer i = v.getId();
-        //AddMember addMember = new AddMember();
-        //addMember.add(str[i], null);
-        fragment = new InsideRoomFragment(str[i], "no");
-        replaceFragment(fragment);
+        AddMember addMember = new AddMember();
+        addMember.add(str[i], null);
+        NavBarActivity.roomId = str[i];
+        NavBarActivity.roomStatus = "no";
+        NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
     }
 
-    public void replaceFragment(Fragment someFragment) {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentContainer, someFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    public Double convert(Double num){
+        Double ret = (int) Math.round(num*100)/(double)100;
+        return ret;
+    }
+
+    private void setTime(){
+        Calendar calendar = Calendar.getInstance();
+        int hours = calendar.get(Calendar.HOUR);
+        int minutes = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                departureHour = hourOfDay;
+                departureMinute = minute;
+                geoLocate();
+            }
+        }, hours, minutes, false);
+        timePickerDialog.show();
+    }
+
+    private void geoLocate(){
+        progressDialog.show();
+        Geocoder geocoder = new Geocoder(NavBarActivity.sContext);
+        List<Address> list = new ArrayList<>();
+        try{
+            list = geocoder.getFromLocationName(originString, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Address originAddress = list.get(0);
+
+        try{
+            list = geocoder.getFromLocationName(destinationString, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Address destinationAddress = list.get(0);
+
+        getRoute(originAddress, destinationAddress);
+    }
+
+    private void getRoute(Address origin, Address destination){
+        Point originPoint = Point.fromLngLat(origin.getLongitude(), origin.getLatitude());
+        Point destinationPoint = Point.fromLngLat(destination.getLongitude(), destination.getLatitude());
+
+        NavigationRoute.builder(NavBarActivity.sContext)
+                .accessToken("pk.eyJ1IjoiZ29yaWtvIiwiYSI6ImNqbXhlMmU3cDFuc2wzcXM4MmV4aG5reHQifQ.JkqGov_XghkeZ_hmYEH8xg")
+                .origin(originPoint)
+                .destination(destinationPoint)
+                .alternatives(true)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+
+                        for (int x = 0; x < 1 && x < response.body().routes().size(); x++) {
+                            DirectionsRoute currentRoute = response.body().routes().get(x);
+                            Double distance = currentRoute.distance() / 1000;//in meters
+                            Double duration = currentRoute.duration() / 60;//in seconds
+
+                            Double fare = (distance * 13.50) + (duration * 2) + 40;
+                            fareFrom = Integer.valueOf(fare.intValue()) - 20;
+                            if (fareFrom <= 45) {
+                                fareFrom = 45;
+                            }
+                            fareTo = Integer.valueOf(fare.intValue()) + 20;
+                            estimatedTravelTime = Integer.valueOf(duration.intValue());
+                        }
+                        CreateTravel createTravel = new CreateTravel();
+                        createTravel.create(originLatLng,
+                                destinationLatLng, originString,
+                                destinationString, fareFrom,
+                                fareTo, departureHour,
+                                departureMinute, estimatedTravelTime);
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                        Toast.makeText(NavBarActivity.sContext, "Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

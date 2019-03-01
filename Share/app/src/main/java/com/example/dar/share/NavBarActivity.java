@@ -1,6 +1,7 @@
 package com.example.dar.share;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,11 +18,23 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class NavBarActivity extends AppCompatActivity {
 
     public static String roomId = null, roomStatus = null;
     public static Context sContext;
+    public static BottomNavigationView bottomNav;
+
+    public Integer leader = 0, removed = 0, x;
+    private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
+    public String userid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +42,11 @@ public class NavBarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_nav_bar);
         sContext = getApplicationContext();
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        firebaseAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
+        userid = user.getUid();
+
+        bottomNav = findViewById(R.id.bottom_navigation);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
                 new TravelFragment()).commitAllowingStateLoss();
@@ -38,29 +55,30 @@ public class NavBarActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Fragment selectedFragment = null;
+                String tag = "";
 
                 switch (menuItem.getItemId()){
                     case R.id.nav_travel:
                         selectedFragment = new TravelFragment();
+                        tag = "Travel";
                         break;
                     case R.id.nav_room:
-                        if (roomId != null){
-                            selectedFragment = new InsideRoomFragment(roomId, roomStatus);
-                        }else{
-                            selectedFragment = new SearchRoomFragment();
-                        }
+                        selectedFragment = new InsideRoomFragment(roomId, roomStatus);
+                        tag = "InsideRoom";
                         break;
                     case R.id.nav_history:
                         selectedFragment = new HistoryFragment();
+                        tag = "History";
                         break;
                     case R.id.nav_Profile:
                         selectedFragment = new ProfileFragment();
+                        tag = "Profile";
                         break;
                 }
 
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
-                        selectedFragment).commitAllowingStateLoss();
+                        selectedFragment, tag).commitAllowingStateLoss();
 
                 return true;
             }
@@ -71,34 +89,34 @@ public class NavBarActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        if (currentFragment instanceof InsideRoomFragment) {
-            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-            builder1.setMessage("Are you sure you want to exit this room?");
-            builder1.setCancelable(true);
+        if (getSupportFragmentManager().findFragmentByTag("InsideRoom") != null){
+            if (roomId != null){
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                builder1.setMessage("Are you sure you want to exit this room?");
+                builder1.setCancelable(true);
 
-            builder1.setPositiveButton(
-                    "Yes",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //delete();
-                            roomId = roomStatus = null;
-                            Fragment fragment = new TravelFragment();
-                            replaceFragment(fragment);
-                        }
-                    });
+                builder1.setPositiveButton(
+                        "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                delete();
+                                roomId = roomStatus = null;
+                                Fragment fragment = new TravelFragment();
+                                replaceFragment(fragment);
+                            }
+                        });
 
-            builder1.setNegativeButton(
-                    "No",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                builder1.setNegativeButton(
+                        "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
 
-            AlertDialog alert11 = builder1.create();
-            alert11.show();
-        }else{
-            if(getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                AlertDialog alert11 = builder1.create();
+                alert11.show();
+            }else{
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                 builder1.setMessage("Are you sure you want to close the application?");
                 builder1.setCancelable(true);
@@ -122,36 +140,34 @@ public class NavBarActivity extends AppCompatActivity {
 
                 AlertDialog alert11 = builder1.create();
                 alert11.show();
-            }else if (getSupportFragmentManager().findFragmentByTag("InsideRoom") != null){
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-                builder1.setMessage("Are you sure you want to exit this room?");
-                builder1.setCancelable(true);
-
-                builder1.setPositiveButton(
-                        "Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //delete();
-                                roomId = roomStatus = null;
-                                Fragment fragment = new TravelFragment();
-                                replaceFragment(fragment);
-                            }
-                        });
-
-                builder1.setNegativeButton(
-                        "No",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
-            }else{
-                getFragmentManager().popBackStackImmediate();
-                getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount()-1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
+        }else if(getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            builder1.setMessage("Are you sure you want to close the application?");
+            builder1.setCancelable(true);
+
+            builder1.setPositiveButton(
+                    "Yes",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finishAffinity();
+                            System.exit(0);
+                        }
+                    });
+
+            builder1.setNegativeButton(
+                    "No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+        } else{
+            getFragmentManager().popBackStackImmediate();
+            getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount()-1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     }
 
@@ -160,5 +176,93 @@ public class NavBarActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragmentContainer, someFragment);
         transaction.commitAllowingStateLoss();
+    }
+
+    //remove user from room in db
+    public void delete(){
+        databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(roomId);
+
+        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    String value = data.getValue().toString();
+                    String key = data.getKey().toString();
+                    if (value.equals(userid)) {
+                        if (key.equals("Leader")) {
+                            leader++;
+                        }
+                        databaseReference.child("users").child(key).removeValue();
+                        removed++;
+                    }
+                }
+                if(leader == 1){
+                    databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot data: dataSnapshot.getChildren()){
+                                if (leader==1){
+                                    databaseReference.child("users").child("Leader").setValue(data.getValue().toString());
+                                    databaseReference.child("users").child(data.getKey()).removeValue();
+                                    leader=0;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) { }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError){
+
+            }
+        });
+
+        /*databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data : dataSnapshot.getChildren()){
+                    if(data.child("CompanionId").getValue().toString().equals(userid)){
+                        databaseReference.child("Guests").child(data.getKey().toString()).removeValue();
+                        removed++;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });*/
+
+        databaseReference.child("NoOfUsers").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                x = Integer.valueOf(dataSnapshot.getValue().toString()) - removed;
+                if(x == 0){
+                    databaseReference.removeValue();
+                }else{
+                    databaseReference.child("Available").setValue(1);
+                    databaseReference.child("NoOfUsers").setValue(x);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        /*Intent intent_time = new Intent(sContext, NotificationTime.class);
+        PendingIntent pendingIntent_time = PendingIntent.getBroadcast(sContext, 1, intent_time, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager_time.cancel(pendingIntent_time);
+
+        Intent intent_advance = new Intent(sContext, NotificationAdvance.class);
+        PendingIntent pendingIntent_advance = PendingIntent.getBroadcast(sContext, 1, intent_advance, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager_advance.cancel(pendingIntent_advance);*/
+
+        x=removed=0;
     }
 }

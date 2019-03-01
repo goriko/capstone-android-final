@@ -69,7 +69,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/buttonFind"
+                    android:id="@+id/buttonLocate"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
@@ -79,6 +79,14 @@
                     android:textColor="@color/white"/>
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
+        <Button
+            android:id="@+id/buttonFindRoom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="FIND ROOM"
+            android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>
 
