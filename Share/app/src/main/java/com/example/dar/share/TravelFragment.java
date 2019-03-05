@@ -1,19 +1,18 @@
 package com.example.dar.share;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Camera;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +21,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
@@ -46,6 +45,7 @@ import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -88,13 +88,17 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
     private AutoCompleteTextView editTextOrigin, editTextDestination;
     private Button buttonLocate, buttonFindRoom;
     private PlaceAutocompleteAdapter placeAutocompleteAdapter;
+    private ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_travel, container, false);
 
-        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        progressDialog = new ProgressDialog(this.getContext());
+        progressDialog.setMessage("Loading ....");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         Mapbox.getInstance(getActivity(), getString(R.string.access_token));
 
@@ -113,13 +117,35 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         editTextOrigin.setAdapter(placeAutocompleteAdapter);
         editTextDestination.setAdapter(placeAutocompleteAdapter);
 
+        if (getActivity().getSupportFragmentManager().findFragmentByTag("Travel") != null){
+            if(NavBarActivity.roomId != null){
+                buttonLocate.setVisibility(View.GONE);
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        buttonFindRoom.setVisibility(View.GONE);
+                        geoLocate(dataSnapshot.child("OriginString").getValue().toString(), dataSnapshot.child("DestinationString").getValue().toString());
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+
         buttonLocate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                geoLocate();
-                buttonFindRoom.setVisibility(View.VISIBLE);
-                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+                if (!editTextOrigin.getText().toString().equals("") && !editTextDestination.getText().toString().equals("")){
+                    buttonFindRoom.setVisibility(View.VISIBLE);
+                    geoLocate(editTextOrigin.getText().toString(), editTextDestination.getText().toString());
+                    InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+                }else{
+                    Toast.makeText(getActivity().getApplicationContext(), "Please fill in origin and destination", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -134,32 +160,28 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         return rootView;
     }
 
-    private void geoLocate() {
-        if (!editTextOrigin.getText().toString().equals("") && !editTextDestination.getText().toString().equals("")){
-            originString = editTextOrigin.getText().toString();
-            destinationString = editTextDestination.getText().toString();
-            Geocoder geocoder = new Geocoder(sContext);
-            List<Address> list = new ArrayList<>();
-            try{
-                list = geocoder.getFromLocationName(originString, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Address originAddress = list.get(0);
-
-            try{
-                list = geocoder.getFromLocationName(destinationString, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Address destinationAddress = list.get(0);
-
-            mark(originAddress, destinationAddress);
-            getRoute(originAddress, destinationAddress);
-
-        }else{
-            Toast.makeText(getActivity().getApplicationContext(), "Please fill in all text fields", Toast.LENGTH_SHORT).show();
+    private void geoLocate(String Origin, String Destination) {
+        originString = Origin;
+        destinationString = Destination;
+        Geocoder geocoder = new Geocoder(sContext);
+        List<Address> list = new ArrayList<>();
+        try{
+            list = geocoder.getFromLocationName(originString, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        Address originAddress = list.get(0);
+
+        try{
+            list = geocoder.getFromLocationName(destinationString, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Address destinationAddress = list.get(0);
+
+        mark(originAddress, destinationAddress);
+        getRoute(originAddress, destinationAddress);
+
     }
     public void mark(Address origin, Address destination){
         originLatlng = new LatLng(origin.getLatitude(), origin.getLongitude());
@@ -170,15 +192,19 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
             map.removeMarker(markerDestination);
         }
 
-        markerOrigin = map.addMarker(new MarkerOptions().position(originLatlng).title("Origin Address"));
-        markerDestination = map.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination Address"));
 
         com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder latLngBounds = new com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder();
-        latLngBounds.include(markerOrigin.getPosition());
-        latLngBounds.include(markerDestination.getPosition());
+        latLngBounds.include(originLatlng);
+        latLngBounds.include(destinationLatLng);
         com.mapbox.mapboxsdk.geometry.LatLngBounds position = latLngBounds.build();
 
-        map.animateCamera(CameraUpdateFactory.newLatLngBounds(position, 250), 7000);
+        //this must be outside of the if statement
+        if (map != null){
+            markerOrigin = map.addMarker(new MarkerOptions().position(originLatlng).title("Origin Address"));
+
+            markerDestination = map.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination Address"));
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(position, 250), 7000);
+        }
     }
 
     private void getRoute(Address origin, Address destination){
@@ -195,6 +221,13 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         if (option2 != null){
             map.removePolyline(option2.getPolyline());
             option2 = null;
+        }
+
+
+        if (map == null){
+            Log.d("EYY", "NULL");
+        }else{
+            Log.d("EYY", "NOT NULL");
         }
 
         NavigationRoute.builder(sContext)
@@ -267,6 +300,7 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         if(PermissionsManager.areLocationPermissionsGranted(NavBarActivity.sContext)){
             initializeLocationEngine();
             initializeLocationLayer();
+            progressDialog.dismiss();
         }else{
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(getActivity());
@@ -277,6 +311,7 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(MapboxMap mapboxMap) {
         map = mapboxMap;
         enableLocation();
+
     }
 
     private void initializeLocationEngine(){

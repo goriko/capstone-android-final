@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +21,8 @@ public class InsideRoomFragment extends Fragment {
     private View rootView;
 
     public InsideRoomFragment(String id, String status){
-        ((NavBarActivity)this.getActivity()).roomId = id;
-        ((NavBarActivity)this.getActivity()).roomStatus = status;
+        NavBarActivity.roomId = id;
+        NavBarActivity.roomStatus = status;
     }
 
     @Override
@@ -29,16 +30,13 @@ public class InsideRoomFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_inside_room, container, false);
 
-        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        TextView textView = (TextView) rootView.findViewById(R.id.textView);
 
-        TextView textView = rootView.findViewById(R.id.textView);
-
-        if (((NavBarActivity)this.getActivity()).roomId != null){
-            textView.setText(((NavBarActivity)this.getActivity()).roomId.toString());
-        }else{
+        if (NavBarActivity.roomId == null){
             textView.setText("OUTSIDE");
+        }else {
+            textView.setText(NavBarActivity.roomId);
         }
-
 
         return rootView;
     }

@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -48,8 +49,7 @@ public class NavBarActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottom_navigation);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
-                new TravelFragment()).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new TravelFragment(), "Travel").commitAllowingStateLoss();
 
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -76,7 +76,6 @@ public class NavBarActivity extends AppCompatActivity {
                         break;
                 }
 
-                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
                         selectedFragment, tag).commitAllowingStateLoss();
 
@@ -88,7 +87,6 @@ public class NavBarActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if (getSupportFragmentManager().findFragmentByTag("InsideRoom") != null){
             if (roomId != null){
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(this);

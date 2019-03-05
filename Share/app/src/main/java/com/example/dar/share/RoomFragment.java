@@ -329,7 +329,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         addMember.add(str[i], null);
         NavBarActivity.roomId = str[i];
         NavBarActivity.roomStatus = "no";
-        NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
+        NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, new InsideRoomFragment(NavBarActivity.roomId, NavBarActivity.roomStatus), "InsideRoom");
+        transaction.commitAllowingStateLoss();
+        //travel must not run after this
     }
 
     public Double convert(Double num){
