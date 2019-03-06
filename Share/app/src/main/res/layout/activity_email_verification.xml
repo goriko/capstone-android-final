@@ -13,7 +13,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/emailver_blurredbckgrnd" />
+        android:src="@drawable/plain_blue_bckgrnd" />
 
     <ImageView
         android:id="@+id/cabshareLogo"
@@ -32,39 +32,47 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
-        android:layout_marginBottom="-40dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/emailver_iconb" />
+        android:src="@drawable/emailver" />
 
     <LinearLayout
         android:id="@+id/square"
-        android:layout_width="match_parent"
+        android:layout_width="342dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="30dp"
-        android:layout_below="@+id/Logo"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/white_solid"
 
-        >
+        android:layout_above="@+id/buttonProceed"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="2"
+            android:textStyle= "bold"
+            android:textSize= "18dp"
+            android:gravity="center"
+            android:text="EMAIL VERIFICATION"
+            android:textColor="#F9AF28"
+
+            />
 
         <TextView
             android:id="@+id/textViewVerified"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
             android:layout_marginBottom="50dp"
             android:layout_weight="1"
-            android:gravity="left"
+            android:gravity="center"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:text="Verify your email. Please Check your email address"
+            android:text="Please do check your enail address for verification to complete the registration. And be a pert of the CABSHARE family"
             android:textColor="#ffffff"
 
             />
-
-
-
 
 
     </LinearLayout>
@@ -73,10 +81,10 @@
         android:id="@+id/buttonProceed"
         android:layout_width="269dp"
         android:layout_height="40dp"
-        android:layout_below="@+id/square"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-       android:layout_marginTop="-20dp"
+        android:layout_marginBottom="113dp"
         android:background="@drawable/yellow_button"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
