@@ -53,6 +53,8 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_history, container, false);
 
+        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         progressDialog = new ProgressDialog(this.getContext());
         progressDialog.setMessage("Loading ....");
         progressDialog.setCancelable(false);

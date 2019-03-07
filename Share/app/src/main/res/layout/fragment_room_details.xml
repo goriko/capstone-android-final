@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InsideRoomFragment">
+    tools:context=".RoomDetailsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,32 +11,34 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textViewTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView"/>
+            android:text="EYY"/>
 
-        <Button
-            android:id="@+id/buttonDetails"
+        <TextView
+            android:id="@+id/textViewOrigin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="View Travel Details"/>
+            android:text="EYY"/>
 
-        <Button
-            android:id="@+id/buttonGuest"
+        <TextView
+            android:id="@+id/textViewDestination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add Guest"/>
+            android:text="EYY"/>
 
-        <EditText
-            android:id="@+id/editTextMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/buttonSend"
+        <TextView
+            android:id="@+id/textViewTravelTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Send"/>
+            android:text="EYY"/>
+
+        <TextView
+            android:id="@+id/textViewFare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="EYY"/>
 
     </LinearLayout>
 

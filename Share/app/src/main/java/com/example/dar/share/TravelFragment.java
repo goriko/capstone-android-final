@@ -71,6 +71,8 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
 
     private View rootView;
 
+    private int i = 0;
+
     private MapView mapView;
     private MapboxMap map;
     private PermissionsManager permissionsManager;
@@ -88,17 +90,13 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
     private AutoCompleteTextView editTextOrigin, editTextDestination;
     private Button buttonLocate, buttonFindRoom;
     private PlaceAutocompleteAdapter placeAutocompleteAdapter;
-    private ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_travel, container, false);
 
-        progressDialog = new ProgressDialog(this.getContext());
-        progressDialog.setMessage("Loading ....");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         Mapbox.getInstance(getActivity(), getString(R.string.access_token));
 
@@ -116,24 +114,6 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         placeAutocompleteAdapter = new PlaceAutocompleteAdapter(NavBarActivity.sContext, geoDataClient, latLngBounds, filter);
         editTextOrigin.setAdapter(placeAutocompleteAdapter);
         editTextDestination.setAdapter(placeAutocompleteAdapter);
-
-        if (getActivity().getSupportFragmentManager().findFragmentByTag("Travel") != null){
-            if(NavBarActivity.roomId != null){
-                buttonLocate.setVisibility(View.GONE);
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
-                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        buttonFindRoom.setVisibility(View.GONE);
-                        geoLocate(dataSnapshot.child("OriginString").getValue().toString(), dataSnapshot.child("DestinationString").getValue().toString());
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        }
 
         buttonLocate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,13 +178,9 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         latLngBounds.include(destinationLatLng);
         com.mapbox.mapboxsdk.geometry.LatLngBounds position = latLngBounds.build();
 
-        //this must be outside of the if statement
-        if (map != null){
-            markerOrigin = map.addMarker(new MarkerOptions().position(originLatlng).title("Origin Address"));
-
-            markerDestination = map.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination Address"));
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(position, 250), 7000);
-        }
+        markerOrigin = map.addMarker(new MarkerOptions().position(originLatlng).title("Origin Address"));
+        markerDestination = map.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination Address"));
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(position, 250), 7000);
     }
 
     private void getRoute(Address origin, Address destination){
@@ -221,13 +197,6 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         if (option2 != null){
             map.removePolyline(option2.getPolyline());
             option2 = null;
-        }
-
-
-        if (map == null){
-            Log.d("EYY", "NULL");
-        }else{
-            Log.d("EYY", "NOT NULL");
         }
 
         NavigationRoute.builder(sContext)
@@ -300,7 +269,6 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         if(PermissionsManager.areLocationPermissionsGranted(NavBarActivity.sContext)){
             initializeLocationEngine();
             initializeLocationLayer();
-            progressDialog.dismiss();
         }else{
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(getActivity());
@@ -311,7 +279,6 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(MapboxMap mapboxMap) {
         map = mapboxMap;
         enableLocation();
-
     }
 
     private void initializeLocationEngine(){
@@ -351,7 +318,27 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
     public void onLocationChanged(Location location) {
         if(location != null){
             userLocation = location;
-            setCameraPosition(location);
+            if(NavBarActivity.roomId != null) {
+                if (i == 0){
+                    buttonLocate.setVisibility(View.GONE);
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            editTextOrigin.setText(dataSnapshot.child("OriginString").getValue().toString());
+                            editTextDestination.setText(dataSnapshot.child("DestinationString").getValue().toString());
+                            geoLocate(dataSnapshot.child("OriginString").getValue().toString(), dataSnapshot.child("DestinationString").getValue().toString());
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    i++;
+                }
+            }else{
+                setCameraPosition(location);
+            }
         }
     }
 

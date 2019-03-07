@@ -330,9 +330,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         NavBarActivity.roomId = str[i];
         NavBarActivity.roomStatus = "no";
         NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentContainer, new InsideRoomFragment(NavBarActivity.roomId, NavBarActivity.roomStatus), "InsideRoom");
-        transaction.commitAllowingStateLoss();
+        transaction.replace(R.id.fragmentContainer, new InsideRoomFragment(), "InsideRoom");
+        transaction.addToBackStack(null);
+        transaction.commit();
         //travel must not run after this
     }
 

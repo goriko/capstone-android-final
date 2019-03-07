@@ -63,7 +63,7 @@ public class NavBarActivity extends AppCompatActivity {
                         tag = "Travel";
                         break;
                     case R.id.nav_room:
-                        selectedFragment = new InsideRoomFragment(roomId, roomStatus);
+                        selectedFragment = new InsideRoomFragment();
                         tag = "InsideRoom";
                         break;
                     case R.id.nav_history:
@@ -75,6 +75,8 @@ public class NavBarActivity extends AppCompatActivity {
                         tag = "Profile";
                         break;
                 }
+
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
                         selectedFragment, tag).commitAllowingStateLoss();
@@ -89,31 +91,37 @@ public class NavBarActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (getSupportFragmentManager().findFragmentByTag("InsideRoom") != null){
             if (roomId != null){
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-                builder1.setMessage("Are you sure you want to exit this room?");
-                builder1.setCancelable(true);
+                if (getSupportFragmentManager().getBackStackEntryCount() != 0){
+                    getFragmentManager().popBackStackImmediate();
+                    getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount()-1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }else{
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                    builder1.setMessage("Are you sure you want to exit this room?");
+                    builder1.setCancelable(true);
 
-                builder1.setPositiveButton(
-                        "Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                delete();
-                                roomId = roomStatus = null;
-                                Fragment fragment = new TravelFragment();
-                                replaceFragment(fragment);
-                            }
-                        });
+                    builder1.setPositiveButton(
+                            "Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    delete();
+                                    roomId = roomStatus = null;
+                                    bottomNav.getMenu().getItem(0).setChecked(true);
+                                    Fragment fragment = new TravelFragment();
+                                    replaceFragment(fragment);
+                                }
+                            });
 
-                builder1.setNegativeButton(
-                        "No",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
+                    builder1.setNegativeButton(
+                            "No",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
 
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                }
             }else{
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                 builder1.setMessage("Are you sure you want to close the application?");
@@ -218,7 +226,7 @@ public class NavBarActivity extends AppCompatActivity {
             }
         });
 
-        /*databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
@@ -233,7 +241,7 @@ public class NavBarActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });*/
+        });
 
         databaseReference.child("NoOfUsers").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
