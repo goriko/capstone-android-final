@@ -31,6 +31,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @SuppressLint("ValidFragment")
 public class InsideHistoryFragment extends Fragment {
 
@@ -80,16 +84,17 @@ public class InsideHistoryFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 textViewOrigin.setText(dataSnapshot.child("OriginString").getValue().toString());
                 textViewDestination.setText(dataSnapshot.child("DestinationString").getValue().toString());
-                String hourString = dataSnapshot.child("DepartureTime").child("DepartureHour").getValue().toString();
-                int hour = Integer.parseInt(hourString);
-                String p;
-                if(hour > 12){
-                    p = "pm";
-                    hour = hour - 12;
-                }else{
-                    p = "am";
+                String time = dataSnapshot.child("DepartureTime").child("DepartureHour").getValue().toString()+":"+dataSnapshot.child("DepartureTime").child("DepartureMinute").getValue().toString();
+                SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
+                Date date = new Date();
+                try {
+                    date = dateFormat1.parse(time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                textViewDeparture.setText(hour+":"+dataSnapshot.child("DepartureTime").child("DepartureMinute").getValue().toString() +" "+p);
+                String stringTime = dateFormat2.format(date);
+                textViewDeparture.setText(stringTime);
                 textViewTime.setText(dataSnapshot.child("EstimatedTravelTime").getValue().toString() + " minute(s)");
                 textViewFare.setText("PHP "+dataSnapshot.child("MinimumFare").getValue().toString()+"-"+dataSnapshot.child("MaximumFare").getValue().toString());
                 textViewPlateNum.setText(dataSnapshot.child("taxi").child("PlateNumber").getValue().toString());

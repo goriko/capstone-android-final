@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -23,11 +24,16 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -43,6 +49,8 @@ public class InsideRoomFragment extends Fragment {
 
     private Button buttonGuest, buttonSend, buttonDetails;
     private EditText editTextMessage;
+
+    private String origin, destination, stringTime, travelTime, fare;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +72,30 @@ public class InsideRoomFragment extends Fragment {
         }else {
             textView.setText(NavBarActivity.roomId);
             databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String time = dataSnapshot.child("DepartureTime").child("DepartureHour").getValue().toString()+":"+dataSnapshot.child("DepartureTime").child("DepartureMinute").getValue().toString();
+                    SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+                    SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
+                    Date date = new Date();
+                    try {
+                        date = dateFormat1.parse(time);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    stringTime = dateFormat2.format(date);
+                    origin = dataSnapshot.child("OriginString").getValue().toString();
+                    destination = dataSnapshot.child("DestinationString").getValue().toString();
+                    travelTime = dataSnapshot.child("EstimatedTravelTime").getValue().toString();
+                    fare = dataSnapshot.child("MinimumFare").getValue().toString() +" - "+ dataSnapshot.child("MaximumFare").getValue().toString();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
             firebaseAuth = FirebaseAuth.getInstance();
             user = firebaseAuth.getCurrentUser();
         }
@@ -85,8 +117,27 @@ public class InsideRoomFragment extends Fragment {
         buttonDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragment = new RoomDetailsFragment();
-                replaceFragment(fragment);
+
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                builder1.setTitle("Travel Details");
+                builder1.setMessage("Departure time: "+stringTime+"\n"+
+                                    "Origin: "+origin+"\n"+
+                                    "Destination: "+destination+"\n"+
+                                    "Travel Time: "+travelTime+" minute(s)\n"+
+                                    "Fare: Php. "+fare);
+                builder1.setCancelable(true);
+                builder1.setPositiveButton(
+                        "Okay",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert11 = builder1.create();
+                alert11.show();
+
+                Log.d("EYY", origin);
+
             }
         });
 

@@ -46,8 +46,11 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -242,14 +245,16 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         LinearLayout.LayoutParams textParams8 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(30));
         textView8.setLayoutParams(textParams8);
         textView8.setPadding(dp(20), 0, dp(20), 0);
-        if(data.child("DepartureTime").child("DepartureHour").getValue() != null) {
-            if(Integer.valueOf(data.child("DepartureTime").child("DepartureHour").getValue().toString()) < 12){
-                textView8.setText(data.child("DepartureTime").child("DepartureHour").getValue().toString()+":"+data.child("DepartureTime").child("DepartureMinute").getValue().toString()+" am");
-            }else{
-                int time = Integer.valueOf(data.child("DepartureTime").child("DepartureHour").getValue().toString()) - 12;
-                textView8.setText(time+":"+data.child("DepartureTime").child("DepartureMinute").getValue().toString()+" pm");
-            }
+        String time = data.child("DepartureTime").child("DepartureHour").getValue().toString()+":"+data.child("DepartureTime").child("DepartureMinute").getValue().toString();
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
+        Date date = new Date();
+        try {
+            date = dateFormat1.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+        textView8.setText(dateFormat2.format(date));
         LinearLayout linearLayout7 = new LinearLayout(NavBarActivity.sContext);
         LinearLayout.LayoutParams linParams7 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         linearLayout7.setLayoutParams(linParams7);
@@ -330,12 +335,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         NavBarActivity.roomId = str[i];
         NavBarActivity.roomStatus = "no";
         NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
-
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentContainer, new InsideRoomFragment(), "InsideRoom");
-        transaction.addToBackStack(null);
-        transaction.commit();
-        //travel must not run after this
+        NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
     }
 
     public Double convert(Double num){

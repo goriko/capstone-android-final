@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,10 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 @SuppressLint("ValidFragment")
 public class SearchRoomFragment extends Fragment {
@@ -59,16 +63,22 @@ public class SearchRoomFragment extends Fragment {
         buttonFind = (Button) rootView.findViewById(R.id.buttonFind);
         editTextOrigin = (AutoCompleteTextView) rootView.findViewById(R.id.editTextOrigin);
         editTextDestination = (AutoCompleteTextView) rootView.findViewById(R.id.editTextDestination);
+        Log.d("EYY", originLatLng.toString()+"             "+destinationLatLng.toString());
 
         editTextOrigin.setText(originString);
         editTextDestination.setText(destinationString);
 
         if (departureHour != null){
-            if(departureHour > 12){
-                textViewTime.setText(departureHour-12+":"+departureMinute+" pm");
-            }else{
-                textViewTime.setText(departureHour+":"+departureMinute+" am");
+            String time = departureHour+":"+departureMinute;
+            SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
+            Date date = new Date();
+            try {
+                date = dateFormat1.parse(time);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            textViewTime.setText(dateFormat2.format(date));
         }
 
         GeoDataClient geoDataClient = Places.getGeoDataClient(NavBarActivity.sContext, null);
@@ -110,11 +120,16 @@ public class SearchRoomFragment extends Fragment {
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 departureHour = hourOfDay;
                 departureMinute = minute;
-                if(departureHour > 12){
-                    textViewTime.setText(departureHour-12+":"+departureMinute+" pm");
-                }else{
-                    textViewTime.setText(departureHour+":"+departureMinute+" am");
+                String time = departureHour+":"+departureMinute;
+                SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
+                Date date = new Date();
+                try {
+                    date = dateFormat1.parse(time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
+                textViewTime.setText(dateFormat2.format(date));
             }
         }, hours, minutes, false);
         timePickerDialog.show();

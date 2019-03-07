@@ -32,6 +32,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class HistoryFragment extends Fragment implements View.OnClickListener{
@@ -187,15 +190,16 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
         LinearLayout.LayoutParams textParams8 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(30));
         textView8.setLayoutParams(textParams8);
         textView8.setPadding(dp(20), 0, dp(20), 0);
-        if(data.child("DepartureTime").child("DepartureHour").getValue() != null) {
-            if(Integer.valueOf(data.child("DepartureTime").child("DepartureHour").getValue().toString()) < 12){
-                textView8.setText(data.child("DepartureTime").child("DepartureHour").getValue().toString()+":"+data.child("DepartureTime").child("DepartureMinute").getValue().toString()+" am");
-            }else{
-                int time = Integer.valueOf(data.child("DepartureTime").child("DepartureHour").getValue().toString()) - 12;
-                textView8.setText(time+":"+data.child("DepartureTime").child("DepartureMinute").getValue().toString()+" pm");
-            }
+        String time = data.child("DepartureTime").child("DepartureHour").getValue().toString()+":"+data.child("DepartureTime").child("DepartureMinute").getValue().toString();
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
+        Date date = new Date();
+        try {
+            date = dateFormat1.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-
+        textView8.setText(dateFormat2.format(date));
         LinearLayout linearLayout8 = new LinearLayout(NavBarActivity.sContext);
         LinearLayout.LayoutParams linParams8 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         linearLayout8.setLayoutParams(linParams8);
