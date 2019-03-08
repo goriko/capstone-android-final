@@ -44,11 +44,8 @@ public class InsideRoomFragment extends Fragment {
     private View rootView;
 
     private DatabaseReference databaseReference;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser user;
 
-    private Button buttonGuest, buttonSend, buttonDetails;
-    private EditText editTextMessage;
+    private Button buttonGuest, buttonDetails, buttonMessages, buttonMembers;
 
     private String origin, destination, stringTime, travelTime, fare;
 
@@ -59,16 +56,16 @@ public class InsideRoomFragment extends Fragment {
 
         TextView textView = (TextView) rootView.findViewById(R.id.textView);
         buttonGuest = (Button) rootView.findViewById(R.id.buttonGuest);
-        buttonSend = (Button) rootView.findViewById(R.id.buttonSend);
         buttonDetails = (Button) rootView.findViewById(R.id.buttonDetails);
-        editTextMessage = (EditText) rootView.findViewById(R.id.editTextMessage);
+        buttonMessages = (Button) rootView.findViewById(R.id.buttonMessages);
+        buttonMembers = (Button) rootView.findViewById(R.id.buttonMembers);
 
         if (NavBarActivity.roomId == null){
             textView.setText("OUTSIDE");
             buttonGuest.setVisibility(View.GONE);
-            buttonSend.setVisibility(View.GONE);
+            buttonMessages.setVisibility(View.GONE);
             buttonDetails.setVisibility(View.GONE);
-            editTextMessage.setVisibility(View.GONE);
+            buttonMembers.setVisibility(View.GONE);
         }else {
             textView.setText(NavBarActivity.roomId);
             databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
@@ -96,21 +93,12 @@ public class InsideRoomFragment extends Fragment {
 
                 }
             });
-            firebaseAuth = FirebaseAuth.getInstance();
-            user = firebaseAuth.getCurrentUser();
         }
 
         buttonGuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addGuest();
-            }
-        });
-
-        buttonSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addMessage();
             }
         });
 
@@ -141,20 +129,23 @@ public class InsideRoomFragment extends Fragment {
             }
         });
 
-        return rootView;
-    }
+        buttonMessages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new RoomMessagesFragment();
+                replaceFragment(fragment);
+            }
+        });
 
-    private void addMessage(){
-        String str = editTextMessage.getText().toString();
-        Message m = new Message(str, user.getUid().toString());
-        Date currentTime = Calendar.getInstance().getTime();
-        long key = currentTime.getTime();
-        // convert to string
-        // String dateString = DateFormat.format("yyyy-MM-dd hh:mm:ss a", new Date(key)).toString();
-        databaseReference.child("messages").child(Long.toString(key)).setValue(m);
-        editTextMessage.setText("");
-        InputMethodManager imm = (InputMethodManager) NavBarActivity.sContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+        buttonMembers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new RoomMembersFragment();
+                replaceFragment(fragment);
+            }
+        });
+
+        return rootView;
     }
 
     private void addGuest(){

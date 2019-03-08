@@ -63,7 +63,6 @@ public class SearchRoomFragment extends Fragment {
         buttonFind = (Button) rootView.findViewById(R.id.buttonFind);
         editTextOrigin = (AutoCompleteTextView) rootView.findViewById(R.id.editTextOrigin);
         editTextDestination = (AutoCompleteTextView) rootView.findViewById(R.id.editTextDestination);
-        Log.d("EYY", originLatLng.toString()+"             "+destinationLatLng.toString());
 
         editTextOrigin.setText(originString);
         editTextDestination.setText(destinationString);

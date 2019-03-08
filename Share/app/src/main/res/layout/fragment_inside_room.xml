@@ -22,21 +22,22 @@
             android:text="View Travel Details"/>
 
         <Button
+            android:id="@+id/buttonMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Messages"/>
+
+        <Button
             android:id="@+id/buttonGuest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add Guest"/>
 
-        <EditText
-            android:id="@+id/editTextMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <Button
-            android:id="@+id/buttonSend"
+            android:id="@+id/buttonMembers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Send"/>
+            android:text="View Members"/>
 
     </LinearLayout>
 
