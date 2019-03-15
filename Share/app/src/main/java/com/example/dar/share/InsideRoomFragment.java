@@ -62,7 +62,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
 
     private String origin, destination, stringTime, travelTime, fare;
     private String[] ID = new String[4];
-    private Integer leader = 0, x = 0, removed = 0;
+    private Integer leader = 0, x = 0, removed = 0, kick = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,62 +77,54 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         textViewLeader = (TextView) rootView.findViewById(R.id.textViewLeader);
         linearLayoutUsers = (LinearLayout) rootView.findViewById(R.id.linearLayoutUsers);
 
-        if (NavBarActivity.roomId == null){
-            textView.setText("OUTSIDE");
-            buttonGuest.setVisibility(View.GONE);
-            buttonMessages.setVisibility(View.GONE);
-            buttonDetails.setVisibility(View.GONE);
-            imageLeader.setVisibility(View.GONE);
-            textViewLeader.setVisibility(View.GONE);
-            linearLayoutUsers.setVisibility(View.GONE);
-        }else {
-            textView.setText(NavBarActivity.roomId);
-            firebaseAuth = FirebaseAuth.getInstance();
-            user = firebaseAuth.getCurrentUser();
-            databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
-            ref = FirebaseDatabase.getInstance().getReference("users");
-            storageReference = FirebaseStorage.getInstance().getReference("profile/");
+        textView.setText(NavBarActivity.roomId);
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
+        ref = FirebaseDatabase.getInstance().getReference("users");
+        storageReference = FirebaseStorage.getInstance().getReference("profile/");
 
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String time = dataSnapshot.child("DepartureTime").child("DepartureHour").getValue().toString()+":"+dataSnapshot.child("DepartureTime").child("DepartureMinute").getValue().toString();
-                    SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
-                    SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
-                    Date date = new Date();
-                    try {
-                        date = dateFormat1.parse(time);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    stringTime = dateFormat2.format(date);
-                    origin = dataSnapshot.child("OriginString").getValue().toString();
-                    destination = dataSnapshot.child("DestinationString").getValue().toString();
-                    travelTime = dataSnapshot.child("EstimatedTravelTime").getValue().toString();
-                    fare = dataSnapshot.child("MinimumFare").getValue().toString() +" - "+ dataSnapshot.child("MaximumFare").getValue().toString();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String time = dataSnapshot.child("DepartureTime").child("DepartureHour").getValue().toString() + ":" + dataSnapshot.child("DepartureTime").child("DepartureMinute").getValue().toString();
+                SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm a");
+                Date date = new Date();
+                try {
+                    date = dateFormat1.parse(time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
+                stringTime = dateFormat2.format(date);
+                origin = dataSnapshot.child("OriginString").getValue().toString();
+                destination = dataSnapshot.child("DestinationString").getValue().toString();
+                travelTime = dataSnapshot.child("EstimatedTravelTime").getValue().toString();
+                fare = dataSnapshot.child("MinimumFare").getValue().toString() + " - " + dataSnapshot.child("MaximumFare").getValue().toString();
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
 
-            databaseReference.child("users").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    linearLayoutUsers.removeAllViews();
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        if (data.getKey().equals("Leader")) {
-                            final long ONE_MEGABYTE = 1024 * 1024 * 5;
-                            storageReference.child(data.getValue().toString()+".jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                @Override
-                                public void onSuccess(byte[] bytes) {
-                                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    float aspectRatio = bm.getWidth() / (float) bm.getHeight();
+        databaseReference.child("users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                linearLayoutUsers.removeAllViews();
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    if (data.getValue().toString().equals(user.getUid())){
+                        kick++;
+                    }
+                    if (data.getKey().equals("Leader")) {
+                        final long ONE_MEGABYTE = 1024 * 1024 * 5;
+                        storageReference.child(data.getValue().toString()+".jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                            @Override
+                            public void onSuccess(byte[] bytes) {
+                                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                float aspectRatio = bm.getWidth() / (float) bm.getHeight();
 
-                                    int width = 90;
-                                    int height = Math.round(width / aspectRatio);
+                                int width = 90;
+                                int height = Math.round(width / aspectRatio);
 
                                     bm = Bitmap.createScaledBitmap(bm, width, height, false);
 
@@ -153,7 +145,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                                 public void onCancelled(@NonNull DatabaseError databaseError) { }
                             });
                         }else{
-                            ref.child(data.getValue().toString()).addValueEventListener(new ValueEventListener() {
+                            ref.child(data.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     LinearLayout linearLayout = new LinearLayout(NavBarActivity.sContext);
@@ -219,73 +211,72 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                             x = 0;
                         }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot data : dataSnapshot.getChildren()){
-                        LinearLayout linearLayout;
-                        linearLayout = new LinearLayout(NavBarActivity.sContext);
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        linearLayout.setLayoutParams(layoutParams);
-                        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                        linearLayout.setPadding(0, 0,0, dp(10));
-
-                        ImageView imageView = new ImageView(NavBarActivity.sContext);
-                        LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(dp(36), LinearLayout.LayoutParams.MATCH_PARENT);
-                        imageView.setLayoutParams(layoutParams1);
-                        imageView.setPadding(dp(10), 0, 0, 0);
-                        imageView.setImageDrawable(NavBarActivity.sContext.getResources().getDrawable(R.drawable.ic_user_icon));
-
-                        LinearLayout linearLayout1 = new LinearLayout(NavBarActivity.sContext);
-                        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        linearLayout1.setLayoutParams(layoutParams3);
-                        linearLayout1.setPadding(dp(10), 0, 0, 0);
-                        linearLayout1.setOrientation(LinearLayout.VERTICAL);
-
-                        TextView textView = new TextView(NavBarActivity.sContext);
-                        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        textView.setLayoutParams(layoutParams2);
-                        textView.setText(data.child("Name").getValue().toString());
-
-                        TextView textView2 = new TextView(NavBarActivity.sContext);
-                        textView2.setLayoutParams(layoutParams2);
-
-                        ref.child(data.child("CompanionId").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                textView2.setText("Guest (with: "+dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString()+")");
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                        linearLayout1.addView(textView);
-                        linearLayout1.addView(textView2);
-
-                        linearLayout.addView(imageView);
-                        linearLayout.addView(linearLayout1);
-
-                        linearLayoutUsers.addView(linearLayout);
+                    if (kick == 0){
+                        promptKick();
                     }
-                }
+                    kick = 0;
+                databaseReference.child("Guests").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot data : dataSnapshot.getChildren()){
+                            LinearLayout linearLayout;
+                            linearLayout = new LinearLayout(NavBarActivity.sContext);
+                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            linearLayout.setLayoutParams(layoutParams);
+                            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                            linearLayout.setPadding(0, 0,0, dp(10));
+
+                            ImageView imageView = new ImageView(NavBarActivity.sContext);
+                            LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(dp(36), LinearLayout.LayoutParams.MATCH_PARENT);
+                            imageView.setLayoutParams(layoutParams1);
+                            imageView.setPadding(dp(10), 0, 0, 0);
+                            imageView.setImageDrawable(NavBarActivity.sContext.getResources().getDrawable(R.drawable.ic_user_icon));
+                            LinearLayout linearLayout1 = new LinearLayout(NavBarActivity.sContext);
+                            LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                            linearLayout1.setLayoutParams(layoutParams3);
+                            linearLayout1.setPadding(dp(10), 0, 0, 0);
+                            linearLayout1.setOrientation(LinearLayout.VERTICAL);
+
+                            TextView textView = new TextView(NavBarActivity.sContext);
+                            LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            textView.setLayoutParams(layoutParams2);
+                            textView.setText(data.child("Name").getValue().toString());
+
+                            TextView textView2 = new TextView(NavBarActivity.sContext);
+                            textView2.setLayoutParams(layoutParams2);
+
+                            ref.child(data.child("CompanionId").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    textView2.setText("Guest (with: " + dataSnapshot.child("Fname").getValue().toString() + " " + dataSnapshot.child("Lname").getValue().toString() + ")");
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
+
+                            linearLayout1.addView(textView);
+                            linearLayout1.addView(textView2);
+
+                            linearLayout.addView(imageView);
+                            linearLayout.addView(linearLayout1);
+
+                            linearLayoutUsers.addView(linearLayout);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+                });
+            }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
-        }
 
         buttonGuest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -418,6 +409,37 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             }
         });
 
+        ref.child(ID[num]).child("CurRoom").setValue("0");
+
         removed=0;
+    }
+
+    private void promptKick(){
+        if(InsideRoomFragment.this.getContext() != null){
+            NavBarActivity.roomId = NavBarActivity.roomStatus = null;
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(InsideRoomFragment.this.getContext());
+            builder1.setMessage("Are you sure you want to close the application?");
+            builder1.setCancelable(false);
+
+            builder1.setPositiveButton(
+                    "Okay",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            NavBarActivity.bottomNav.getMenu().getItem(0).setChecked(true);
+                            NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_travel);
+                        }
+                    });
+
+            builder1.setNegativeButton(
+                    "No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+        }
     }
 }

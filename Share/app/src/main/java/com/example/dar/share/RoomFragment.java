@@ -31,6 +31,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -72,6 +74,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     private Fragment fragment = null;
 
     private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
 
     private ProgressDialog progressDialog;
 
@@ -96,6 +100,9 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
         gridView = (GridLayout) rootView.findViewById(R.id.layout);
         buttonCreate = (Button) rootView.findViewById(R.id.buttonCreate);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
 
         databaseReference = FirebaseDatabase.getInstance().getReference("travel");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -126,7 +133,9 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     }
                 }
                 if (x == 0){
-                    Toast.makeText(NavBarActivity.sContext, "No rooms found", Toast.LENGTH_LONG).show();
+                    if (RoomFragment.this.getContext() != null){
+                        Toast.makeText(RoomFragment.this.getContext(), "No rooms found", Toast.LENGTH_LONG).show();
+                    }
                 }
                 progressDialog.dismiss();
             }
@@ -333,6 +342,18 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         AddMember addMember = new AddMember();
         addMember.add(str[i], null);
         NavBarActivity.roomId = str[i];
+        databaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                databaseReference.child("CurRoom").setValue(str[i]);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         NavBarActivity.roomStatus = "no";
         NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
         NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);

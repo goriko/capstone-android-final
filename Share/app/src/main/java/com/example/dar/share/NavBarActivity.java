@@ -34,6 +34,7 @@ public class NavBarActivity extends AppCompatActivity {
 
     public Integer leader = 0, removed = 0, x;
     private DatabaseReference databaseReference;
+    private DatabaseReference reference;
     private FirebaseAuth firebaseAuth;
     public String userid;
 
@@ -49,7 +50,24 @@ public class NavBarActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottom_navigation);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new TravelFragment(), "Travel").commitAllowingStateLoss();
+        reference = FirebaseDatabase.getInstance().getReference("users").child(userid);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.child("CurRoom").getValue().toString().equals("0")){
+                    roomId = dataSnapshot.child("CurRoom").getValue().toString();
+                    bottomNav.getMenu().getItem(1).setChecked(true);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new InsideRoomFragment(), "InsideRoom").commitAllowingStateLoss();
+                }else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new TravelFragment(), "Travel").commitAllowingStateLoss();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -63,8 +81,13 @@ public class NavBarActivity extends AppCompatActivity {
                         tag = "Travel";
                         break;
                     case R.id.nav_room:
-                        selectedFragment = new InsideRoomFragment();
-                        tag = "InsideRoom";
+                        if (NavBarActivity.roomId == null){
+                            selectedFragment = new NoRoomFragment();
+                            tag = "";
+                        }else{
+                            selectedFragment = new InsideRoomFragment();
+                            tag = "InsideRoom";
+                        }
                         break;
                     case R.id.nav_history:
                         selectedFragment = new HistoryFragment();
@@ -106,8 +129,7 @@ public class NavBarActivity extends AppCompatActivity {
                                     delete();
                                     roomId = roomStatus = null;
                                     bottomNav.getMenu().getItem(0).setChecked(true);
-                                    Fragment fragment = new TravelFragment();
-                                    replaceFragment(fragment);
+                                    bottomNav.setSelectedItemId(R.id.nav_travel);
                                 }
                             });
 
@@ -253,6 +275,18 @@ public class NavBarActivity extends AppCompatActivity {
                     databaseReference.child("Available").setValue(1);
                     databaseReference.child("NoOfUsers").setValue(x);
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                reference.child("CurRoom").setValue("0");
             }
 
             @Override

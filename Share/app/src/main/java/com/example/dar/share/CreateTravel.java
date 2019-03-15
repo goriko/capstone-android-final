@@ -11,6 +11,7 @@ import java.util.UUID;
 public class CreateTravel {
 
     public DatabaseReference databaseReference;
+    public DatabaseReference ref;
     public FirebaseUser user;
     public String mKey;
 
@@ -24,6 +25,7 @@ public class CreateTravel {
                          Integer departureMinute,
                          Integer estimatedTravelTime){
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        ref = FirebaseDatabase.getInstance().getReference("users");
         user = FirebaseAuth.getInstance().getCurrentUser();
         mKey = UUID.randomUUID().toString();
 
@@ -35,6 +37,8 @@ public class CreateTravel {
 
         AddLeaderID addLeaderID = new AddLeaderID(user.getUid().toString());
         databaseReference.child("travel").child(mKey).child("users").setValue(addLeaderID);
+
+        ref.child(user.getUid()).child("CurRoom").setValue(mKey);
 
         NavBarActivity.roomId =  mKey;
         NavBarActivity.roomStatus = "no";
