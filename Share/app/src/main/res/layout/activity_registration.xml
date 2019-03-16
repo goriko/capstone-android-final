@@ -67,7 +67,8 @@
                 android:paddingStart="10dp"
                 android:textColorHighlight="@android:color/background_light"
                 android:textSize="14sp"
-                tools:textColorHint="@color/white" />
+                tools:textColorHint="@color/white"
+                android:inputType="textPassword"/>
             <EditText
                 android:id="@+id/editTextPassword2"
                 android:layout_width="match_parent"
@@ -80,7 +81,8 @@
                 android:paddingStart="10dp"
                 android:textColorHighlight="@android:color/background_light"
                 android:textSize="14sp"
-                tools:textColorHint="@color/white" />
+                tools:textColorHint="@color/white"
+                android:inputType="textPassword"/>
 
 
             <TextView

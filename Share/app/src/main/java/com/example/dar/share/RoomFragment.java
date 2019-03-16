@@ -100,7 +100,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
         gridView = (GridLayout) rootView.findViewById(R.id.layout);
         buttonCreate = (Button) rootView.findViewById(R.id.buttonCreate);
-
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
 
@@ -133,9 +132,13 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     }
                 }
                 if (x == 0){
-                    if (RoomFragment.this.getContext() != null){
-                        Toast.makeText(RoomFragment.this.getContext(), "No rooms found", Toast.LENGTH_LONG).show();
-                    }
+                    TextView textView1 = new TextView(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams textParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    textView1.setLayoutParams(textParams1);
+                    textView1.setText("No room found");
+                    textView1.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.colorBlack));
+                    textView1.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    gridView.addView(textView1);
                 }
                 progressDialog.dismiss();
             }

@@ -57,7 +57,16 @@
                 android:layout_height="wrap_content"
                 android:alignmentMode="alignMargins"
                 android:columnCount="1"
-                android:columnOrderPreserved="false"/>
+                android:columnOrderPreserved="false">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="No room found"/>
+
+            </GridLayout>
         </ScrollView>
     </LinearLayout>
 

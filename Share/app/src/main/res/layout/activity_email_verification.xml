@@ -69,7 +69,7 @@
             android:gravity="center"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:text="Please do check your enail address for verification to complete the registration. And be a pert of the CABSHARE family"
+            android:text="Please do check your enail address for verification to complete the registration. And be a part of the SHARE family"
             android:textColor="#ffffff"
 
             />
@@ -90,7 +90,8 @@
         android:paddingRight="20dp"
         android:text="Proceed"
         android:textColor="@color/white"
-        android:textStyle="normal" />
+        android:textStyle="normal"
+        android:visibility="invisible"/>
 
 
 
