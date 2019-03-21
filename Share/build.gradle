@@ -3,14 +3,12 @@
 buildscript {
     
     repositories {
+        mavenCentral()
         google()
         jcenter()
-
-        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
-
+        classpath 'com.android.tools.build:gradle:3.3.2'
         classpath 'com.google.gms:google-services:4.0.0'
         
 
@@ -20,13 +18,11 @@ buildscript {
 }
 
 allprojects {
-    repositories {
-        google()
-        jcenter()
-
-        mavenCentral()
+    repositories {mavenCentral()
         maven { url 'https://mapbox.bintray.com/mapbox' }
         maven{url 'https://jitpack.io'}
+        google()
+        jcenter()
     }
 }
 
