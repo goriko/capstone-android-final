@@ -34,6 +34,9 @@
         <activity android:name=".EmailVerificationActivity" />
         <activity android:name=".PinNumberActivity" />
         <activity android:name=".NavBarActivity"/>
+
+        <receiver android:name=".NotificationTime" />
+        <receiver android:name=".NotificationAdvance" />
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.dar.share;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -31,6 +32,8 @@ public class NavBarActivity extends AppCompatActivity {
     public static String roomId = null, roomStatus = null;
     public static Context sContext;
     public static BottomNavigationView bottomNav;
+    public static AlarmManager alarmManager_time;
+    public static AlarmManager alarmManager_advance;
 
     public Integer leader = 0, removed = 0, x;
     private DatabaseReference databaseReference;

@@ -1,9 +1,12 @@
 package com.example.dar.share;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -101,6 +104,9 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                 destination = dataSnapshot.child("DestinationString").getValue().toString();
                 travelTime = dataSnapshot.child("EstimatedTravelTime").getValue().toString();
                 fare = dataSnapshot.child("MinimumFare").getValue().toString() + " - " + dataSnapshot.child("MaximumFare").getValue().toString();
+
+                alarm(Integer.valueOf(dataSnapshot.child("DepartureTime").child("DepartureHour").getValue().toString()), Integer.valueOf(dataSnapshot.child("DepartureTime").child("DepartureMinute").getValue().toString()));
+
             }
 
             @Override
@@ -441,5 +447,55 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             AlertDialog alert11 = builder1.create();
             alert11.show();
         }
+    }
+
+    public void alarm(int departureHour, int departureMinute) {
+        NavBarActivity.alarmManager_time = (AlarmManager) NavBarActivity.sContext.getSystemService(Context.ALARM_SERVICE);
+        NavBarActivity.alarmManager_advance = (AlarmManager) NavBarActivity.sContext.getSystemService(Context.ALARM_SERVICE);
+
+        Date date = new Date();
+
+        Calendar alarm_time = Calendar.getInstance();
+        Calendar alarm_advance = Calendar.getInstance();
+        Calendar cal_now = Calendar.getInstance();
+
+        alarm_time.setTime(date);
+        alarm_advance.setTime(date);
+        cal_now.setTime(date);
+
+        alarm_time.set(Calendar.HOUR_OF_DAY, departureHour);
+        alarm_time.set(Calendar.MINUTE, departureMinute);
+        alarm_time.set(Calendar.SECOND, 0);
+
+        if (departureMinute >= 3) {
+            alarm_advance.set(Calendar.HOUR_OF_DAY, departureHour);
+            alarm_advance.set(Calendar.MINUTE, departureMinute - 3);
+            alarm_advance.set(Calendar.SECOND, 0);
+        } else {
+            int i = 3 - departureMinute;
+            alarm_advance.set(Calendar.HOUR_OF_DAY, departureHour - 1);
+            alarm_advance.set(Calendar.MINUTE, 60 - i);
+            alarm_advance.set(Calendar.SECOND, 0);
+        }
+
+        if (alarm_time.before(cal_now)) {
+            alarm_time.add(Calendar.DATE, 1);
+        }
+
+        Intent intent_time = new Intent(NavBarActivity.sContext, NotificationTime.class);
+        intent_time.putExtra("id", NavBarActivity.roomId);
+        PendingIntent pendingIntent_time = PendingIntent.getBroadcast(NavBarActivity.sContext, 1, intent_time, 0);
+        ((NavBarActivity)this.getActivity()).alarmManager_time.set(AlarmManager.RTC_WAKEUP, alarm_time.getTimeInMillis(), pendingIntent_time);
+
+        Log.d("EYY", Long.toString(date.getTime()));
+
+        if (alarm_advance.before(cal_now)) {
+            alarm_advance.add(Calendar.DATE, 1);
+        }
+
+        Intent intent_advance = new Intent(NavBarActivity.sContext, NotificationAdvance.class);
+        intent_advance.putExtra("id", NavBarActivity.roomId);
+        PendingIntent pendingIntent_advance = PendingIntent.getBroadcast(NavBarActivity.sContext, 24444, intent_advance, 0);
+        ((NavBarActivity)this.getActivity()).alarmManager_advance.set(AlarmManager.RTC_WAKEUP, alarm_advance.getTimeInMillis(), pendingIntent_advance);
     }
 }
