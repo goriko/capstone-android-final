@@ -357,7 +357,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
             }
         });
-        NavBarActivity.roomStatus = "no";
         NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
         NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
     }

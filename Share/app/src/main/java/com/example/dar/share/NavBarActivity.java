@@ -298,14 +298,26 @@ public class NavBarActivity extends AppCompatActivity {
             }
         });
 
-        /*Intent intent_time = new Intent(sContext, NotificationTime.class);
+        Intent intent_time = new Intent(sContext, NotificationTime.class);
         PendingIntent pendingIntent_time = PendingIntent.getBroadcast(sContext, 1, intent_time, PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager_time.cancel(pendingIntent_time);
 
         Intent intent_advance = new Intent(sContext, NotificationAdvance.class);
         PendingIntent pendingIntent_advance = PendingIntent.getBroadcast(sContext, 1, intent_advance, PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager_advance.cancel(pendingIntent_advance);*/
+        alarmManager_advance.cancel(pendingIntent_advance);
 
         x=removed=0;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getExtras().get("status").toString().equals("start")){
+            roomStatus = "start";
+        }
+
+        NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
+        NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
     }
 }

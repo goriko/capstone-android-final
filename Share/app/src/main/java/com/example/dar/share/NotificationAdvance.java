@@ -31,9 +31,9 @@ public class NotificationAdvance extends BroadcastReceiver {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context.getApplicationContext(), "notify_001");
         Intent ii = new Intent(context.getApplicationContext(), NavBarActivity.class);
         ii.putExtra("id", intent.getExtras().get("id").toString());
-        ii.putExtra("pic", "no");
-        ii.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, ii, 0);
+        ii.putExtra("status", "null");
+        ii.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, ii, PendingIntent.FLAG_CANCEL_CURRENT);
 
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);

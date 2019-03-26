@@ -29,7 +29,7 @@ public class AddMember {
                 databaseReference.child("NoOfUsers").setValue(x.toString());
 
                 if(x == 4){
-                    databaseReference.child("Available").setValue(0);
+                    databaseReference.child("Available").setValue(3);
                 }
 
                 return;

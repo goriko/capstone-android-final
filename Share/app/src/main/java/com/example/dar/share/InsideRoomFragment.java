@@ -58,7 +58,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
 
-    private Button buttonGuest, buttonDetails, buttonMessages;
+    private Button buttonGuest, buttonDetails, buttonMessages, buttonTravel;
     private ImageView imageLeader;
     private TextView textViewLeader;
     private LinearLayout linearLayoutUsers;
@@ -76,6 +76,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         buttonGuest = (Button) rootView.findViewById(R.id.buttonGuest);
         buttonDetails = (Button) rootView.findViewById(R.id.buttonDetails);
         buttonMessages = (Button) rootView.findViewById(R.id.buttonMessages);
+        buttonTravel = (Button) rootView.findViewById(R.id.buttonTravel);
         imageLeader = (ImageView) rootView.findViewById(R.id.imageLeader);
         textViewLeader = (TextView) rootView.findViewById(R.id.textViewLeader);
         linearLayoutUsers = (LinearLayout) rootView.findViewById(R.id.linearLayoutUsers);
@@ -86,6 +87,13 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
         ref = FirebaseDatabase.getInstance().getReference("users");
         storageReference = FirebaseStorage.getInstance().getReference("profile/");
+
+        if (NavBarActivity.roomStatus != null){
+            if (NavBarActivity.roomStatus.equals("start")){
+                buttonTravel.setVisibility(View.VISIBLE);
+            }
+        }
+
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -313,8 +321,6 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                 AlertDialog alert11 = builder1.create();
                 alert11.show();
 
-                Log.d("EYY", origin);
-
             }
         });
 
@@ -486,8 +492,6 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         intent_time.putExtra("id", NavBarActivity.roomId);
         PendingIntent pendingIntent_time = PendingIntent.getBroadcast(NavBarActivity.sContext, 1, intent_time, 0);
         ((NavBarActivity)this.getActivity()).alarmManager_time.set(AlarmManager.RTC_WAKEUP, alarm_time.getTimeInMillis(), pendingIntent_time);
-
-        Log.d("EYY", Long.toString(date.getTime()));
 
         if (alarm_advance.before(cal_now)) {
             alarm_advance.add(Calendar.DATE, 1);
