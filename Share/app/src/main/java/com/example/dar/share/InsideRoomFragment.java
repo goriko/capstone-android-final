@@ -90,10 +90,21 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
 
         if (NavBarActivity.roomStatus != null){
             if (NavBarActivity.roomStatus.equals("start")){
-                buttonTravel.setVisibility(View.VISIBLE);
+                databaseReference.child("users").child("Leader").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue().toString().equals(user.getUid().toString())){
+                            change();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         }
-
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -501,5 +512,9 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         intent_advance.putExtra("id", NavBarActivity.roomId);
         PendingIntent pendingIntent_advance = PendingIntent.getBroadcast(NavBarActivity.sContext, 24444, intent_advance, 0);
         ((NavBarActivity)this.getActivity()).alarmManager_advance.set(AlarmManager.RTC_WAKEUP, alarm_advance.getTimeInMillis(), pendingIntent_advance);
+    }
+
+    public void change(){
+        buttonTravel.setVisibility(View.VISIBLE);
     }
 }
