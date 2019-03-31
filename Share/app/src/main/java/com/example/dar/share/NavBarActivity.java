@@ -120,6 +120,21 @@ public class NavBarActivity extends AppCompatActivity {
                 if (getSupportFragmentManager().getBackStackEntryCount() != 0){
                     getFragmentManager().popBackStackImmediate();
                     getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount()-1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }else if (roomStatus.equals("on going")){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                    builder1.setMessage("Unable to exit room while travel is on going");
+                    builder1.setCancelable(true);
+
+                    builder1.setPositiveButton(
+                            "Okay",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
                 }else{
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                     builder1.setMessage("Are you sure you want to exit this room?");
@@ -196,7 +211,7 @@ public class NavBarActivity extends AppCompatActivity {
 
             AlertDialog alert11 = builder1.create();
             alert11.show();
-        } else{
+        }else{
             getFragmentManager().popBackStackImmediate();
             getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount()-1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
@@ -314,6 +329,8 @@ public class NavBarActivity extends AppCompatActivity {
         super.onNewIntent(intent);
 
         if (intent.getExtras().get("status").toString().equals("start")){
+            databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(roomId);
+            databaseReference.child("Available").setValue(0);
             roomStatus = "start";
         }
 

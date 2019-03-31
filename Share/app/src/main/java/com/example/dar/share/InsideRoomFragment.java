@@ -94,7 +94,8 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue().toString().equals(user.getUid().toString())){
-                            change();
+                            buttonGuest.setVisibility(View.GONE);
+                            buttonTravel.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -103,8 +104,46 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
 
                     }
                 });
+            }else if (NavBarActivity.roomStatus.equals("on going")){
+                Log.d("EYY", "EYY");
+                buttonGuest.setVisibility(View.GONE);
+                buttonTravel.setVisibility(View.GONE);
+                tracker();
             }
+        }else{
+            databaseReference.child("Available").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue().toString().equals("0")){
+                        NavBarActivity.roomStatus = "on going";
+                        buttonGuest.setVisibility(View.GONE);
+                        buttonTravel.setVisibility(View.GONE);
+                        tracker();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
+
+        databaseReference.child("NoOfUsers").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue().toString().equals("4") || NavBarActivity.roomStatus != null){
+                    buttonGuest.setVisibility(View.GONE);
+                }else{
+                    buttonGuest.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -213,7 +252,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                                     linearLayout.addView(imageView);
                                     linearLayout.addView(textView);
 
-                                    if (leader == 1){
+                                    if (leader == 1 && NavBarActivity.roomStatus == null){
                                         Button button = new Button(NavBarActivity.sContext);
                                         LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                         button.setLayoutParams(layoutParams3);
@@ -340,6 +379,17 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             public void onClick(View v) {
                 Fragment fragment = new RoomMessagesFragment();
                 replaceFragment(fragment);
+            }
+        });
+
+        buttonTravel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new TakePicActivity();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragmentContainer, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -514,7 +564,17 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         ((NavBarActivity)this.getActivity()).alarmManager_advance.set(AlarmManager.RTC_WAKEUP, alarm_advance.getTimeInMillis(), pendingIntent_advance);
     }
 
-    public void change(){
-        buttonTravel.setVisibility(View.VISIBLE);
+    public void tracker(){
+        Log.d("EYY", "tracker");
+    }
+
+    public void stopAlarm(){
+        Intent intent_time = new Intent(NavBarActivity.sContext, NotificationTime.class);
+        PendingIntent pendingIntent_time = PendingIntent.getBroadcast(NavBarActivity.sContext, 1, intent_time, PendingIntent.FLAG_CANCEL_CURRENT);
+        NavBarActivity.alarmManager_time.cancel(pendingIntent_time);
+
+        Intent intent_advance = new Intent(NavBarActivity.sContext, NotificationAdvance.class);
+        PendingIntent pendingIntent_advance = PendingIntent.getBroadcast(NavBarActivity.sContext, 1, intent_advance, PendingIntent.FLAG_CANCEL_CURRENT);
+        NavBarActivity.alarmManager_advance.cancel(pendingIntent_advance);
     }
 }
