@@ -119,6 +119,12 @@
             android:text="start travel"
             android:visibility="gone"/>
 
+        <TextView
+            android:id="@+id/textViewLocation"
+            android:text="EYYYYY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
 </FrameLayout>
