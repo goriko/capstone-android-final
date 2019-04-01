@@ -1,16 +1,27 @@
 package com.example.dar.share;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +39,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class NavBarActivity extends AppCompatActivity {
+public class NavBarActivity extends AppCompatActivity implements LocationListener {
 
     public static String roomId = null, roomStatus = null;
     public static Context sContext;
@@ -40,6 +52,10 @@ public class NavBarActivity extends AppCompatActivity {
     private DatabaseReference reference;
     private FirebaseAuth firebaseAuth;
     public String userid;
+
+    private Location userLocation, destinationLocation;
+    private LocationManager locationManager;
+    private static final int REQUEST_PERMISSION_FINE_LOCATION_RESULT = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +136,7 @@ public class NavBarActivity extends AppCompatActivity {
                 if (getSupportFragmentManager().getBackStackEntryCount() != 0){
                     getFragmentManager().popBackStackImmediate();
                     getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount()-1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }else if (roomStatus.equals("on going")){
+                }else if (roomStatus!=null && roomStatus.equals("on going")){
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                     builder1.setMessage("Unable to exit room while travel is on going");
                     builder1.setCancelable(true);
@@ -336,5 +352,96 @@ public class NavBarActivity extends AppCompatActivity {
 
         NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
         NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
+    }
+
+    public void tracker(){
+        destinationLocation = new Location("");
+
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
+        databaseRef.child("Destination").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                destinationLocation.setLongitude(Double.parseDouble(dataSnapshot.child("longitude").getValue().toString()));
+                destinationLocation.setLatitude(Double.parseDouble(dataSnapshot.child("latitude").getValue().toString()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        final Handler handler = new Handler();
+        final int delay = 5000;
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION )==
+                            PackageManager.PERMISSION_GRANTED){
+                        getLocation();
+                    }else{
+                        if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+                            Toast.makeText(getApplicationContext(), "Application required to access location", Toast.LENGTH_SHORT).show();
+                        }
+                        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_FINE_LOCATION_RESULT);
+                    }
+                }else{
+                    getLocation();
+                }
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
+    }
+
+    void getLocation(){
+        try{
+            locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
+        }catch (SecurityException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        userLocation = location;
+        Log.d("EYY", destinationLocation.toString());
+        if(userLocation.distanceTo(destinationLocation) <= 1000){
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(NavBarActivity.sContext, "notify_001")
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("HAPIT NA ABOT")
+                    .setContentText("Hapit naka")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(NavBarActivity.sContext);
+            notificationManager.notify(1, mBuilder.build());
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Toast.makeText(NavBarActivity.sContext, "Please Enable GPS and Internet", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == REQUEST_PERMISSION_FINE_LOCATION_RESULT){
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getApplicationContext(), "Application will not run without location permission", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

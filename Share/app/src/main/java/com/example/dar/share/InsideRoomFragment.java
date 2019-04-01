@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,8 +51,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @SuppressLint("ValidFragment")
-public class InsideRoomFragment extends Fragment implements View.OnClickListener,
-        LocationListener {
+public class InsideRoomFragment extends Fragment implements View.OnClickListener{
 
     private View rootView;
 
@@ -70,11 +68,6 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
     private String origin, destination, stringTime, travelTime, fare;
     private String[] ID = new String[4];
     private Integer leader = 0, x = 0, removed = 0, kick = 0;
-
-
-    private Location userLocation, destinationLocation;
-    private LocationManager locationManager;
-    private static final int REQUEST_PERMISSION_FINE_LOCATION_RESULT = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,7 +111,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                 Log.d("EYY", "EYY");
                 buttonGuest.setVisibility(View.GONE);
                 buttonTravel.setVisibility(View.GONE);
-                tracker();
+                ((NavBarActivity)getActivity()).tracker();
             }
         }else{
             databaseReference.child("Available").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -128,7 +121,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                         NavBarActivity.roomStatus = "on going";
                         buttonGuest.setVisibility(View.GONE);
                         buttonTravel.setVisibility(View.GONE);
-                        tracker();
+                        ((NavBarActivity)getActivity()).tracker();
                     }
                 }
 
@@ -574,55 +567,6 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         ((NavBarActivity)this.getActivity()).alarmManager_advance.set(AlarmManager.RTC_WAKEUP, alarm_advance.getTimeInMillis(), pendingIntent_advance);
     }
 
-    public void tracker(){
-        destinationLocation = new Location("");
-
-        databaseReference.child("Destination").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                destinationLocation.setLongitude(Double.parseDouble(dataSnapshot.child("longitude").getValue().toString()));
-                destinationLocation.setLatitude(Double.parseDouble(dataSnapshot.child("latitude").getValue().toString()));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        final Handler handler = new Handler();
-        final int delay = 5000;
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    if(ContextCompat.checkSelfPermission(getContext().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION )==
-                            PackageManager.PERMISSION_GRANTED){
-                        getLocation();
-                    }else{
-                        if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
-                            Toast.makeText(getContext().getApplicationContext(), "Application required to access location", Toast.LENGTH_SHORT).show();
-                        }
-                        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_FINE_LOCATION_RESULT);
-                    }
-                }else{
-                    getLocation();
-                }
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
-    }
-
-    void getLocation(){
-        try{
-            locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
-        }catch (SecurityException e){
-            e.printStackTrace();
-        }
-    }
-
     public void stopAlarm(){
         Intent intent_time = new Intent(NavBarActivity.sContext, NotificationTime.class);
         PendingIntent pendingIntent_time = PendingIntent.getBroadcast(NavBarActivity.sContext, 1, intent_time, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -633,45 +577,4 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         NavBarActivity.alarmManager_advance.cancel(pendingIntent_advance);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_PERMISSION_FINE_LOCATION_RESULT){
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(getContext().getApplicationContext(), "Application will not run without location permission", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        userLocation = location;
-        textViewLocatioon.setText(userLocation.getLatitude() +" "+userLocation.getLongitude());
-        Log.d("EYY", destinationLocation.toString());
-        if(userLocation.distanceTo(destinationLocation) <= 1000){
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(NavBarActivity.sContext, "notify_001")
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("HAPIT NA ABOT")
-                    .setContentText("Hapit naka")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(NavBarActivity.sContext);
-            notificationManager.notify(1, mBuilder.build());
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Toast.makeText(NavBarActivity.sContext, "Please Enable GPS and Internet", Toast.LENGTH_SHORT).show();
-    }
 }
