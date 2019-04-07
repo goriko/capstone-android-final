@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TravelPinActivity">
+
+    <ImageView
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/plain_blue_bckgrnd" />
+
+    <ImageView
+        android:id="@+id/cabshareLogo_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="82px"
+        android:src= "@drawable/emailver_cabshare"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="30dp"
+
+        />
+
+    <ImageView
+        android:id="@+id/Logo_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="300px"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/pin" />
+
+    <LinearLayout
+        android:id="@+id/square"
+        android:layout_width="342dp"
+        android:layout_height="wrap_content"
+
+        android:layout_above="@+id/buttonProceed"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="2"
+            android:textStyle= "bold"
+            android:textSize= "18dp"
+            android:gravity="center"
+            android:text="PIN CODE"
+            android:textColor="#F9AF28"
+
+            />
+
+        <TextView
+            android:id="@+id/textViewPin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="Please enter your pin number"
+            android:textColor="#ffffff"
+
+            />
+
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:pinWidth="40dp"
+            app:pinHeight="40dp"
+            android:layout_marginBottom="50dp"
+            app:pinLength="4"
+            app:cursorVisible="true"
+            app:inputType="number"
+            app:password="true"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonProceed"
+        android:layout_width="269dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="113dp"
+        android:background="@drawable/yellow_button"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="Proceed"
+        android:textColor="@color/white"
+        android:textStyle="normal" />
+
+</RelativeLayout>

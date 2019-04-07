@@ -1,8 +1,12 @@
 package com.example.dar.share;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +17,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -47,7 +53,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     public static AlarmManager alarmManager_time;
     public static AlarmManager alarmManager_advance;
 
-    public Integer leader = 0, removed = 0, x;
+    public Integer leader = 0, removed = 0, x, ctr =0;
     private DatabaseReference databaseReference;
     private DatabaseReference reference;
     private FirebaseAuth firebaseAuth;
@@ -131,12 +137,12 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().findFragmentByTag("InsideRoom") != null){
-            if (roomId != null){
-                if (getSupportFragmentManager().getBackStackEntryCount() != 0){
+        if (getSupportFragmentManager().findFragmentByTag("InsideRoom") != null) {
+            if (roomId != null) {
+                if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
                     getFragmentManager().popBackStackImmediate();
-                    getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount()-1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }else if (roomStatus!=null && roomStatus.equals("on going")){
+                    getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryCount() - 1, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                } else if (roomStatus != null && roomStatus.equals("on going")) {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                     builder1.setMessage("Unable to exit room while travel is on going");
                     builder1.setCancelable(true);
@@ -151,7 +157,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
 
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
-                }else{
+                } else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                     builder1.setMessage("Are you sure you want to exit this room?");
                     builder1.setCancelable(true);
@@ -160,6 +166,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
                             "Yes",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
+                                    getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentByTag("InsideRoom")).commit();
                                     delete();
                                     roomId = roomStatus = null;
                                     bottomNav.getMenu().getItem(0).setChecked(true);
@@ -178,7 +185,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
                 }
-            }else{
+            } else {
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                 builder1.setMessage("Are you sure you want to close the application?");
                 builder1.setCancelable(true);
@@ -203,6 +210,22 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
                 AlertDialog alert11 = builder1.create();
                 alert11.show();
             }
+
+        }else if (getSupportFragmentManager().findFragmentByTag("Rating") != null){
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            builder1.setMessage("Please finish this step to complete travel");
+            builder1.setCancelable(true);
+
+            builder1.setPositiveButton(
+                    "Okay",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
         }else if(getSupportFragmentManager().getBackStackEntryCount() == 0) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
             builder1.setMessage("Are you sure you want to close the application?");
@@ -344,6 +367,8 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
+        Log.d("EYY", intent.getExtras().get("status").toString());
+
         if (intent.getExtras().get("status").toString().equals("start")){
             databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(roomId);
             databaseReference.child("Available").setValue(0);
@@ -407,16 +432,45 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     @Override
     public void onLocationChanged(Location location) {
         userLocation = location;
-        Log.d("EYY", destinationLocation.toString());
-        if(userLocation.distanceTo(destinationLocation) <= 1000){
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(NavBarActivity.sContext, "notify_001")
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("HAPIT NA ABOT")
-                    .setContentText("Hapit naka")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        //Log.d("EYY", "Distance: \n"+userLocation.distanceTo(destinationLocation));
+        if(userLocation.distanceTo(destinationLocation) <= 4000){
+            if(ctr == 0){
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(2000);
 
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(NavBarActivity.sContext);
-            notificationManager.notify(1, mBuilder.build());
+                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                @SuppressLint("InvalidWakeLockTag") PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "Tag");
+                wakeLock.acquire();
+                wakeLock.release();
+
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(NavBarActivity.sContext, "notify_001");
+                Intent ii = new Intent(getApplicationContext(), TravelPinActivity.class);
+                ii.putExtra("id", roomId);
+                ii.putExtra("status", "reached destination");
+                ii.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(sContext, 1, ii, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                mBuilder.setContentIntent(pendingIntent);
+                mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+                mBuilder.setContentTitle("Almost at the destination");
+                mBuilder.setContentText("Finish your travel now");
+                mBuilder.setPriority(Notification.PRIORITY_MAX);
+                mBuilder.setAutoCancel(true);
+
+                NotificationManager mNotificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel channel = new NotificationChannel("notify_001",
+                            "Channel human readable title",
+                            NotificationManager.IMPORTANCE_DEFAULT);
+                    mNotificationManager.createNotificationChannel(channel);
+                }
+
+                mNotificationManager.notify(0, mBuilder.build());
+                ctr++;
+            }
         }
     }
 

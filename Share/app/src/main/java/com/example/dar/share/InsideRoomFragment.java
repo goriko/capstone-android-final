@@ -91,13 +91,30 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         ref = FirebaseDatabase.getInstance().getReference("users");
         storageReference = FirebaseStorage.getInstance().getReference("profile/");
 
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null){
+                    if (dataSnapshot.child("NoOfUsers").getValue().toString().equals("4") || !dataSnapshot.child("Available").getValue().toString().equals("1")){
+                        buttonGuest.setVisibility(View.GONE);
+                    }else{
+                        buttonGuest.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         if (NavBarActivity.roomStatus != null){
             if (NavBarActivity.roomStatus.equals("start")){
                 databaseReference.child("users").child("Leader").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue().toString().equals(user.getUid().toString())){
-                            buttonGuest.setVisibility(View.GONE);
                             buttonTravel.setVisibility(View.VISIBLE);
                         }
                     }
@@ -107,11 +124,11 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
 
                     }
                 });
-            }else if (NavBarActivity.roomStatus.equals("on going")){
-                Log.d("EYY", "EYY");
-                buttonGuest.setVisibility(View.GONE);
-                buttonTravel.setVisibility(View.GONE);
                 ((NavBarActivity)getActivity()).tracker();
+            }else if (NavBarActivity.roomStatus.equals("on going")){
+                buttonTravel.setVisibility(View.GONE);
+            }else if (NavBarActivity.roomStatus.equals("reached destination")){
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new RatingFragment(), "Rating").commitAllowingStateLoss();
             }
         }else{
             databaseReference.child("Available").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -122,6 +139,9 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                         buttonGuest.setVisibility(View.GONE);
                         buttonTravel.setVisibility(View.GONE);
                         ((NavBarActivity)getActivity()).tracker();
+                    }else if (dataSnapshot.getValue().toString().equals("2")){
+                        NavBarActivity.roomStatus = "reached destination";
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new RatingFragment(), "Rating").commitAllowingStateLoss();
                     }
                 }
 
@@ -131,22 +151,6 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                 }
             });
         }
-
-        databaseReference.child("NoOfUsers").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue().toString().equals("4") || NavBarActivity.roomStatus != null){
-                    buttonGuest.setVisibility(View.GONE);
-                }else{
-                    buttonGuest.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -206,6 +210,13 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                                         textViewLeader.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString()+ " (You)");
                                     }else{
                                         textViewLeader.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString());
+                                        textViewLeader.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Fragment fragment = new ViewProfileFragment(data.getValue().toString());
+                                                replaceFragment(fragment);
+                                            }
+                                        });
                                     }
                                 }
                                 @Override
@@ -250,6 +261,13 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                                         textView.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString()+" (You)");
                                     }else{
                                         textView.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString());
+                                        textView.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Fragment fragment = new ViewProfileFragment(data.getValue().toString());
+                                                replaceFragment(fragment);
+                                            }
+                                        });
                                     }
 
                                     linearLayout.addView(imageView);
@@ -260,6 +278,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                                         LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                         button.setLayoutParams(layoutParams3);
                                         button.setText("KICK");
+                                        Log.d("EYY", x.toString());
                                         button.setId(x);
                                         ID[x] = data.getValue().toString();
                                         button.setOnClickListener(InsideRoomFragment.this);

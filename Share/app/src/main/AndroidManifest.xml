@@ -16,7 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBx6cn5u2IGM0k1bn5Gk6DkYqyL74Q6xzA" />
@@ -33,10 +32,12 @@
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".EmailVerificationActivity" />
         <activity android:name=".PinNumberActivity" />
-        <activity android:name=".NavBarActivity"/>
+        <activity android:name=".NavBarActivity" />
 
         <receiver android:name=".NotificationTime" />
         <receiver android:name=".NotificationAdvance" />
+
+        <activity android:name=".TravelPinActivity"></activity>
     </application>
 
 </manifest>
