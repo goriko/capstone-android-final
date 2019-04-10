@@ -58,7 +58,7 @@ public class ProfileFragment extends Fragment {
         final FirebaseUser user = firebaseAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid().toString());
         reference = FirebaseDatabase.getInstance().getReference("users");
-        storageReference = FirebaseStorage.getInstance().getReference("profile/" + user.getUid().toString() + ".jpg");
+        storageReference = FirebaseStorage.getInstance().getReference("profile/");
 
         textViewName = (TextView) rootView.findViewById(R.id.textViewName);
         textViewEmail = (TextView) rootView.findViewById(R.id.textViewEmail);
@@ -109,7 +109,21 @@ public class ProfileFragment extends Fragment {
                         LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(dp(36), dp(36));
                         layoutParams1.setMargins(0, dp(10),0,0);
                         imageView.setLayoutParams(layoutParams1);
-                        imageView.setImageResource(R.drawable.person);
+                        final long ONE_MEGABYTE = 1024 * 1024 * 5;
+                        storageReference.child(data.child("User").getValue().toString()+".jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                            @Override
+                            public void onSuccess(byte[] bytes) {
+                                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                float aspectRatio = bm.getWidth() /(float) bm.getHeight();
+
+                                int width = 90;
+                                int height = Math.round(width / aspectRatio);
+
+                                bm = Bitmap.createScaledBitmap(bm, width, height, false);
+
+                                imageView.setImageBitmap(bm);
+                            }
+                        });
 
                         LinearLayout linearLayout1 = new LinearLayout(NavBarActivity.sContext);
                         linearLayout1.setLayoutParams(layoutParams);
@@ -159,7 +173,7 @@ public class ProfileFragment extends Fragment {
         textViewEmail.setText(user.getEmail());
 
         final long ONE_MEGABYTE = 1024 * 1024 * 5;
-        storageReference.getBytes(ONE_MEGABYTE)
+        storageReference.child(user.getUid().toString() + ".jpg").getBytes(ONE_MEGABYTE)
                 .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
