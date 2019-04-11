@@ -23,6 +23,7 @@ import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -55,7 +56,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     public static AlarmManager alarmManager_time;
     public static AlarmManager alarmManager_advance;
 
-    public Integer leader = 0, removed = 0, x, ctr =0;
+    public Integer leader = 0, removed = 0, x, ctr = 0;
     private DatabaseReference databaseReference;
     private DatabaseReference reference;
     private FirebaseAuth firebaseAuth;
@@ -63,6 +64,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
 
     private Location userLocation, destinationLocation;
     private LocationManager locationManager;
+    private LocationListener locationListener;
     private static final int REQUEST_PERMISSION_FINE_LOCATION_RESULT = 0;
 
     @Override
@@ -76,6 +78,34 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
         userid = user.getUid();
 
         bottomNav = findViewById(R.id.bottom_navigation);
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                reference.child("Location").child("Latitude").setValue(location.getLatitude());
+                reference.child("Location").child("Longitude").setValue(location.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
 
         reference = FirebaseDatabase.getInstance().getReference("users").child(userid);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -434,7 +464,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     @Override
     public void onLocationChanged(Location location) {
         userLocation = location;
-        //Log.d("EYY", "Distance: \n"+userLocation.distanceTo(destinationLocation));
+
         if(userLocation.distanceTo(destinationLocation) <= 4000){
             if(ctr == 0){
                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);

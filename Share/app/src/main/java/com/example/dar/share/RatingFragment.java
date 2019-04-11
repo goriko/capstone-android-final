@@ -1,6 +1,9 @@
 package com.example.dar.share;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -126,6 +130,8 @@ public class RatingFragment extends Fragment {
                     reference.child(ID[i]).child("Rating").child(mKey).setValue(addRating);
                 }
                 reference.child(user.getUid()).child("CurRoom").setValue(0);
+
+                Toast.makeText(NavBarActivity.sContext, "Finished Travel", Toast.LENGTH_LONG).show();
 
                 NavBarActivity.roomId = NavBarActivity.roomStatus = null;
                 NavBarActivity.bottomNav.getMenu().getItem(0).setChecked(true);

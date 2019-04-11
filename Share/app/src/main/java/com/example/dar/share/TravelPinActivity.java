@@ -35,9 +35,7 @@ import okhttp3.Response;
 public class TravelPinActivity extends AppCompatActivity {
 
     public int i=0, ndx;
-    private String pin, message, name, origin, destination, latitude, longitude, to;
-    public String[] users = new String[4];
-    public String[] guest = new String[4];
+    private String pin, message, name, to;
 
     private TextView textViewPin;
     private Pinview pinView;
@@ -64,57 +62,7 @@ public class TravelPinActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 name = dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString();
-                latitude = dataSnapshot.child("Location").child("Latitude").getValue().toString();
-                longitude = dataSnapshot.child("Location").child("Longitude").getValue().toString();
                 to = dataSnapshot.child("EmergencyContact").getValue().toString();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                origin = dataSnapshot.child("OriginString").getValue().toString();
-                destination = dataSnapshot.child("DestinationString").getValue().toString();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ndx = 0;
-                for (DataSnapshot data:dataSnapshot.getChildren()){
-                    if (!data.getValue().toString().equals(firebaseAuth.getUid())){
-                        getMember(ndx, data.getValue().toString());
-                        ndx++;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ndx = 0;
-                for (DataSnapshot data:dataSnapshot.getChildren()){
-                    guest[ndx] = data.child("Name").getValue().toString();
-                    getGuests(ndx, data.child("CompanionId").getValue().toString());
-                    ndx++;
-                }
             }
 
             @Override
@@ -188,27 +136,7 @@ public class TravelPinActivity extends AppCompatActivity {
     }
 
     public void sendSMS(){
-        message ="\nSHARE" +
-                "\n"+name+" has entered an invalid Pin. Room details are as follows:" +
-                "\nOrigin: " + origin+
-                "\nDestination: " + destination+
-                "\n" +
-                "\nMEMBERS:";
-        for (ndx = 0; ndx<4 && users[ndx]!=null; ndx++){
-            message = message+"\n"+users[ndx];
-        }
-        for (ndx = 0; ndx<4 && guest[ndx]!=null; ndx++){
-            message = message+"\n"+guest[ndx];
-        }
-        message = message+"\n" +
-                "\nLast seen:" +
-                "\nLatitude: " +latitude+
-                "\nLongitude: " +longitude+
-                "\n" +
-                "\nPlease check on the user and make sure of his safety." +
-                "\nDo not reply to this message.";
-
-        Log.d("EYY", message);
+        message ="\nSHARE: "+name+" has entered an invalid Pin. Please make sure of his/her safety. Do not reply to this message.";
 
         OkHttpClient client = new OkHttpClient();
         String url = "https://api.twilio.com/2010-04-01/Accounts/AC7f18475068710bc061de9206a00557c4/SMS/Messages";
@@ -231,34 +159,6 @@ public class TravelPinActivity extends AppCompatActivity {
             Response response = client.newCall(request).execute();
             Log.d("EYY", "sendSms: "+ response.body().string());
         } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    public void getMember(int i, String data){
-        reference.child(data).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                users[i] = dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public void getGuests(int i, String data){
-        reference.child(data).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                guest[i] = guest[i]+" (with: "+dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString()+")";
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
 }
