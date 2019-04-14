@@ -6,41 +6,156 @@
     tools:context=".SearchRoomFragment">
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ScrollView
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_width="match_parent">
 
-        <AutoCompleteTextView
-            android:id="@+id/editTextOrigin"
-            android:layout_width="match_parent"
+        <RelativeLayout
             android:layout_height="wrap_content"
-            android:hint="Enter your Place of Origin"
-            android:enabled="false" />
-        <AutoCompleteTextView
-            android:id="@+id/editTextDestination"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter your Destinaton"
-            android:enabled="false" />
+            android:layout_width="match_parent">
 
-        <TextView
-            android:id="@+id/textViewTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/search_b"
+                android:id="@+id/reset_icon"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/reset_title"
+                android:layout_below="@+id/reset_icon"
+                android:text="SEARCH ROOM"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/colorYellow"
+                android:layout_centerHorizontal="true"/>
 
-        <Button
-            android:id="@+id/buttonTime"
-            android:text="Enter Time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/buttonFind"
-            android:text="Find"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical"
+                android:layout_below="@+id/reset_title"
+                android:id="@+id/to_change"
+                android:layout_marginTop="50dp">
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="PLACE OF ORIGIN"
+                    android:layout_marginBottom="5dp"/>
+
+
+                <EditText
+                    android:id="@+id/editTextOrigin"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/gray"
+                    android:drawablePadding="5dp"
+                    android:paddingStart="10dp"
+                    android:inputType="textPassword"
+                    android:textColorHighlight="@android:color/background_light"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="DESTINATION"
+                    android:layout_marginBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/editTextDestination"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/gray"
+                    android:drawablePadding="5dp"
+                    android:inputType="textPassword"
+                    android:paddingStart="10dp"
+                    android:textColorHint="@android:color/background_light"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TIME OF TRAVEL"
+                    android:layout_marginBottom="5dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:textSize="14sp"
+                        android:paddingStart="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_width="120dp"
+                        android:layout_height="35dp"
+                        android:gravity="left"
+                        android:layout_weight="1"
+                        android:id="@+id/textViewTime"
+                        />
+
+                    <Button
+                        android:id="@+id/buttonTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:text="enter time"
+                        android:textColor="@color/white"
+                        android:textAlignment="center"
+                        android:background="@drawable/register_button"
+                        android:layout_marginStart="15dp"
+                        android:layout_gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:textStyle="normal"/>
+                </LinearLayout>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/register_button"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="search room"
+                    android:textColor="@color/white"
+                    android:textStyle="normal"
+                    android:id="@+id/buttonFind"/>
+
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
 
 </FrameLayout>

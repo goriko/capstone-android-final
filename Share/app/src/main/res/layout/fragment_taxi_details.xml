@@ -5,41 +5,141 @@
     android:layout_height="match_parent"
     tools:context=".TaxiDetailsActivity">
 
-    <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+    <ScrollView
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:orientation="vertical">
+        android:layout_width="match_parent">
 
-        <TextView
-            android:text="Add taxi details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <EditText
-            android:layout_width="match_parent"
+        <RelativeLayout
             android:layout_height="wrap_content"
-            android:id="@+id/editTextPlateNum"
-            android:hint="Enter Taxi Plate number"/>
+            android:layout_width="match_parent">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editTextNum"
-            android:hint="Enter Taxi Number"/>
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/taxi_b"
+                android:id="@+id/reset_icon"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/reset_title"
+                android:layout_below="@+id/reset_icon"
+                android:text="CAB INFORMATION"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/colorYellow"
+                android:layout_centerHorizontal="true"/>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editTextOperator"
-            android:hint="Enter Taxi Operator"/>
+            <TextView
+                android:id="@+id/descr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="174dp"
+                android:scaleType="fitCenter"
+                android:text="Please fill out the details below. " />
 
-        <Button
-            android:text="Proceed"
-            android:id="@+id/buttonProceed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical"
+                android:layout_below="@+id/descr"
+                android:id="@+id/to_change"
+                android:layout_marginTop="50dp">
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="PLATE NUMBER"
+                    android:layout_marginBottom="5dp"/>
+
+
+                <EditText
+                    android:id="@+id/editTextPlateNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/gray"
+                    android:drawablePadding="5dp"
+                    android:paddingStart="10dp"
+                    android:inputType="textPassword"
+                    android:textColorHighlight="@android:color/background_light"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TAXI NUMBER"
+                    android:layout_marginBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/editTextNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/gray"
+                    android:drawablePadding="5dp"
+                    android:inputType="textPassword"
+                    android:paddingStart="10dp"
+                    android:textColorHint="@android:color/background_light"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TAXI OPERATOR"
+                    android:layout_marginBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/editTextOperator"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/gray"
+                    android:drawablePadding="5dp"
+                    android:inputType="textPassword"
+                    android:paddingStart="10dp"
+                    android:textColorHint="@android:color/background_light"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/register_button"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="proceed"
+                    android:textColor="@color/white"
+                    android:textStyle="normal"
+                    android:id="@+id/buttonProceed"/>
+
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
 
 </FrameLayout>
