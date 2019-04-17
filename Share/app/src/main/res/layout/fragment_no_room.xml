@@ -5,10 +5,110 @@
     android:layout_height="match_parent"
     tools:context=".NoRoomFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Currently not inside a room" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/plain_blue_bckgrnd" />
+
+    <!-- TODO: Update blank fragment layout -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="80dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="82px"
+                android:src= "@drawable/login_cabshare"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="30dp"
+                android:layout_below="@id/logo"
+                android:id="@+id/formLogo"
+                />
+
+            <ImageView
+                android:layout_marginTop="30dp"
+                android:layout_below= "@+id/formLogo"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/taxi_b_a"
+                android:id="@+id/reset_icon"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/reset_title"
+                android:layout_below="@+id/reset_icon"
+                android:text="NOT INSIDE ROOM"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/colorYellow"
+                android:layout_centerHorizontal="true"/>
+
+
+            <TextView
+
+                android:id="@+id/textView"
+                android:layout_marginEnd="45dp"
+                android:layout_marginStart="45dp"
+                android:text="You are currently not inside of any room. Make use of the application and plot your own schedule date and time travel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="190dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:textColor="#ffffff"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical"
+                android:layout_below="@+id/textView"
+                android:id="@+id/to_change">
+
+
+
+
+
+
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:scaleType="fitCenter"
+
+                    android:layout_gravity="center"
+                    android:src="@drawable/path_fin"
+                    android:layout_marginBottom="10dp"/>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
 
 </FrameLayout>
