@@ -6,23 +6,85 @@
     tools:context=".RatingFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
+        <RelativeLayout
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:layout_width="match_parent">
 
-        <Button
-            android:id="@+id/buttonProceed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Proceed"/>
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/star_yellow"
+                android:id="@+id/reset_icon"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/reset_title"
+                android:layout_below="@+id/reset_icon"
+                android:text="RATE USER"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/colorYellow"
+                android:layout_centerHorizontal="true"/>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/descr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="174dp"
+                android:scaleType="fitCenter"
+                android:text="Rate user for the travel experience and accompany in the cab"  />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical"
+                android:layout_below="@+id/descr"
+                android:id="@+id/to_change"
+                android:layout_marginTop="50dp">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/register_button"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="proceed"
+                    android:textColor="@color/white"
+                    android:textStyle="normal"
+                    android:id="@+id/buttonProceed"/>
+
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
 
 </FrameLayout>

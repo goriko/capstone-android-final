@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -68,10 +69,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     private LatLng originLatLng, destinationLatLng;
 
     private View rootView;
-    private Button buttonCreate;
 
     private GridLayout gridView;
-    private Fragment fragment = null;
 
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
@@ -99,7 +98,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         progressDialog.show();
 
         gridView = (GridLayout) rootView.findViewById(R.id.layout);
-        buttonCreate = (Button) rootView.findViewById(R.id.buttonCreate);
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
 
@@ -132,13 +130,89 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     }
                 }
                 if (x == 0){
+                    LinearLayout linearLayout = new LinearLayout(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    linearLayout.setLayoutParams(layoutParams);
+                    linearLayout.setOrientation(LinearLayout.VERTICAL);
+                    linearLayout.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+                    ImageView imageView = new ImageView(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    imageParams.setMargins(0, dp(10), 0, dp(10));
+                    imageView.setLayoutParams(imageParams);
+                    imageView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    imageView.setBackgroundResource(R.drawable.calendar_c);
+
                     TextView textView1 = new TextView(NavBarActivity.sContext);
                     LinearLayout.LayoutParams textParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    textParams1.setMargins(0, 0, 0, dp(5));
                     textView1.setLayoutParams(textParams1);
-                    textView1.setText("No room found");
-                    textView1.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.colorBlack));
+                    textView1.setText("NO ROOM");
                     textView1.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                    gridView.addView(textView1);
+                    textView1.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.colorYellow));
+                    textView1.setTextSize(18);
+
+
+                    TextView textView2 = new TextView(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams textParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    textParams2.setMargins(0, 174, 0, 0);
+                    textParams2.setMarginStart(dp(45));
+                    textParams2.setMarginEnd(dp(45));
+                    textView2.setLayoutParams(textParams2);
+                    textView2.setText("There are no available rooms found. Create your own room and start your own schedule time of travel at your convenience.");
+                    textView2.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+                    Button button = new Button(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    buttonParams.setMarginStart(dp(45));
+                    buttonParams.setMarginEnd(dp(45));
+                    buttonParams.setMargins(0, dp(45), 0, dp(10));
+                    button.setLayoutParams(buttonParams);
+                    button.setPadding(dp(20), 0, dp(20), 0);
+                    button.setText("CREATE ROOM");
+                    button.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.white));
+                    button.setBackgroundResource(R.drawable.register_button);
+
+                    linearLayout.addView(imageView);
+                    linearLayout.addView(textView1);
+                    linearLayout.addView(textView2);
+                    linearLayout.addView(button);
+                    gridView.addView(linearLayout);
+
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (departureHour == null){
+                                setTime();
+                            }else{
+                                geoLocate();
+                            }
+                        }
+                    });
+                }else{
+                    Button button = new Button(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    buttonParams.setMarginStart(dp(45));
+                    buttonParams.setMarginEnd(dp(45));
+                    buttonParams.setMargins(0, dp(45), 0, dp(10));
+                    button.setLayoutParams(buttonParams);
+                    button.setPadding(dp(20), 0, dp(20), 0);
+                    button.setText("CREATE ROOM");
+                    button.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.white));
+                    button.setBackgroundResource(R.drawable.register_button);
+
+                    gridView.addView(button);
+
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (departureHour == null){
+                                setTime();
+                            }else{
+                                geoLocate();
+                            }
+                        }
+                    });
                 }
                 progressDialog.dismiss();
             }
@@ -146,17 +220,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-
-        buttonCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (departureHour == null){
-                    setTime();
-                }else{
-                    geoLocate();
-                }
             }
         });
 

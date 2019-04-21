@@ -6,31 +6,185 @@
     tools:context=".ViewProfileFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:id="@+id/prof">
+
+
+
+
+
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBlue"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+
+
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:orientation="horizontal">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+
+                            <TextView
+                                android:id="@+id/textViewGender"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#fff"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:orientation="vertical"
+                            android:paddingLeft="50dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/textViewContact"
+                                android:textColor="#fff"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/imageView"
+                android:layout_gravity="center_horizontal" />
+
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:textColor="#fff"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp"/>
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_below= "@+id/prof"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="230dp">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/reset_icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/star_yellow" />
+
+        <TextView
+            android:id="@+id/textViewRating"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reset_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:scaleType="fitCenter"
+            android:textColor="@color/colorBlue"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textViewName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:id="@+id/reset_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_rating"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:scaleType="fitCenter"
+            android:text="OVERALL RATING"
+            android:textColor="@color/colorYellow"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+
+
+
 
         <TextView
-            android:id="@+id/textViewGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:paddingTop="40dp"
+            android:layout_below="@+id/reset_title"
+            android:id="@+id/textDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginEnd="45dp"
+            android:layout_marginStart="45dp"
+            android:layout_marginTop="130dp"
+            android:gravity="center"
+            android:scaleType="fitCenter"
+            android:text="Overall rating of user in accompany experience, and travel group sharing room convenience " />
 
-        <TextView
-            android:id="@+id/textViewContact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
 
-    </LinearLayout>
+
+
+    </RelativeLayout>
 
 </FrameLayout>

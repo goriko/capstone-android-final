@@ -55,7 +55,7 @@
                     android:layout_marginBottom="5dp"/>
 
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/editTextOrigin"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -65,7 +65,7 @@
                     android:background="@drawable/gray"
                     android:drawablePadding="5dp"
                     android:paddingStart="10dp"
-                    android:inputType="textPassword"
+                    android:enabled="false"
                     android:textColorHighlight="@android:color/background_light"
                     android:textSize="14sp" />
 
@@ -75,7 +75,7 @@
                     android:text="DESTINATION"
                     android:layout_marginBottom="5dp"/>
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/editTextDestination"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -84,8 +84,8 @@
                     android:layout_marginStart="15dp"
                     android:background="@drawable/gray"
                     android:drawablePadding="5dp"
-                    android:inputType="textPassword"
                     android:paddingStart="10dp"
+                    android:enabled="false"
                     android:textColorHint="@android:color/background_light"
                     android:textSize="14sp" />
 

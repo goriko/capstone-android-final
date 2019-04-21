@@ -8,11 +8,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,7 +32,7 @@ public class ViewProfileFragment extends Fragment {
     private String Id;
     private View rootView;
 
-    private TextView textViewName, textViewGender, textViewContact;
+    private TextView textViewName, textViewGender, textViewContact, textViewRating;
     private ImageView imageView;
 
     private DatabaseReference databaseReference;
@@ -49,12 +51,34 @@ public class ViewProfileFragment extends Fragment {
         textViewName = (TextView) rootView.findViewById(R.id.textViewName);
         textViewGender = (TextView) rootView.findViewById(R.id.textViewGender);
         textViewContact = (TextView) rootView.findViewById(R.id.textViewContact);
+        textViewRating = (TextView) rootView.findViewById(R.id.textViewRating);
         imageView = (ImageView) rootView.findViewById(R.id.imageView);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("users").child(Id);
         storageReference = FirebaseStorage.getInstance().getReference("profile/" + Id + ".jpg");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.child("Rating").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int x = 0;
+                float temp = 0;
+                for (DataSnapshot data: dataSnapshot.getChildren()){
+                    temp = temp + Float.parseFloat(data.child("Rating").getValue().toString());
+                    x++;
+                }
+                temp = temp/x;
+                if (x!=0){
+                    textViewRating.setText(Float.toString(temp));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 textViewName.setText(dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString());

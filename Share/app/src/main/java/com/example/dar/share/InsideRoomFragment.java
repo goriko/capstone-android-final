@@ -18,10 +18,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,10 +64,10 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
 
-    private Button buttonGuest, buttonDetails, buttonMessages, buttonTravel;
     private ImageView imageLeader;
-    private TextView textViewLeader, textViewLocatioon;
-    private LinearLayout linearLayoutUsers;
+    private TextView textViewLeader;
+    private LinearLayout linearLayoutUsers, linearLayoutGuests;
+    private CardView cardViewGuest, cardViewMessage, cardViewDetails, cardViewTravel;
 
     private String origin, destination, stringTime, travelTime, fare;
     private String[] ID = new String[4];
@@ -74,17 +78,15 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_inside_room, container, false);
 
-        TextView textView = (TextView) rootView.findViewById(R.id.textView);
-        textViewLocatioon = (TextView) rootView.findViewById(R.id.textViewLocation);
-        buttonGuest = (Button) rootView.findViewById(R.id.buttonGuest);
-        buttonDetails = (Button) rootView.findViewById(R.id.buttonDetails);
-        buttonMessages = (Button) rootView.findViewById(R.id.buttonMessages);
-        buttonTravel = (Button) rootView.findViewById(R.id.buttonTravel);
+        cardViewGuest = (CardView) rootView.findViewById(R.id.cardViewGuest);
+        cardViewDetails = (CardView) rootView.findViewById(R.id.cardViewDetails);
+        cardViewMessage = (CardView) rootView.findViewById(R.id.cardViewMessage);
+        cardViewTravel = (CardView) rootView.findViewById(R.id.cardViewTravel);
         imageLeader = (ImageView) rootView.findViewById(R.id.imageLeader);
         textViewLeader = (TextView) rootView.findViewById(R.id.textViewLeader);
         linearLayoutUsers = (LinearLayout) rootView.findViewById(R.id.linearLayoutUsers);
+        linearLayoutGuests = (LinearLayout) rootView.findViewById(R.id.linearLayoutGuests);
 
-        textView.setText(NavBarActivity.roomId);
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
@@ -96,10 +98,30 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null){
                     if (dataSnapshot.child("NoOfUsers").getValue().toString().equals("4") || !dataSnapshot.child("Available").getValue().toString().equals("1")){
-                        buttonGuest.setVisibility(View.GONE);
+                        cardViewGuest.setVisibility(View.GONE);
                     }else{
-                        buttonGuest.setVisibility(View.VISIBLE);
+                        cardViewGuest.setVisibility(View.VISIBLE);
                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        databaseReference.child("Available").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue().toString().equals("0")){
+                    NavBarActivity.roomStatus = "on going";
+                    cardViewGuest.setVisibility(View.GONE);
+                    cardViewTravel.setVisibility(View.GONE);
+                    NavBarActivity navBarActivity = new NavBarActivity();
+                    navBarActivity.tracker();
+                }else if (dataSnapshot.getValue().toString().equals("2")){
+                    NavBarActivity.roomStatus = "reached destination";
                 }
             }
 
@@ -115,7 +137,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue().toString().equals(user.getUid().toString())){
-                            buttonTravel.setVisibility(View.VISIBLE);
+                            cardViewTravel.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -124,32 +146,12 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
 
                     }
                 });
-                ((NavBarActivity)getActivity()).tracker();
+                stopAlarm();
             }else if (NavBarActivity.roomStatus.equals("on going")){
-                buttonTravel.setVisibility(View.GONE);
+                cardViewTravel.setVisibility(View.GONE);
             }else if (NavBarActivity.roomStatus.equals("reached destination")){
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new RatingFragment(), "Rating").commitAllowingStateLoss();
             }
-        }else{
-            databaseReference.child("Available").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue().toString().equals("0")){
-                        NavBarActivity.roomStatus = "on going";
-                        buttonGuest.setVisibility(View.GONE);
-                        buttonTravel.setVisibility(View.GONE);
-                        ((NavBarActivity)getActivity()).tracker();
-                    }else if (dataSnapshot.getValue().toString().equals("2")){
-                        NavBarActivity.roomStatus = "reached destination";
-                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new RatingFragment(), "Rating").commitAllowingStateLoss();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
         }
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -192,170 +194,109 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                             @Override
                             public void onSuccess(byte[] bytes) {
                                 Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                float aspectRatio = bm.getWidth() / (float) bm.getHeight();
 
-                                int width = 90;
-                                int height = Math.round(width / aspectRatio);
+                                RoundedBitmapDrawable roundDrawable = RoundedBitmapDrawableFactory.create(NavBarActivity.sContext.getResources(), bm);
+                                roundDrawable.setCircular(true);
 
-                                    bm = Bitmap.createScaledBitmap(bm, width, height, false);
-
-                                    imageLeader.setImageBitmap(bm);
-                                }
-                            });
-                            ref.child(data.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (data.getValue().toString().equals(user.getUid())){
-                                        leader = 1;
-                                        textViewLeader.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString()+ " (You)");
-                                    }else{
-                                        textViewLeader.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString());
-                                        textViewLeader.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Fragment fragment = new ViewProfileFragment(data.getValue().toString());
-                                                replaceFragment(fragment);
-                                            }
-                                        });
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) { }
-                            });
-                        }else{
-                            ref.child(data.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    LinearLayout linearLayout = new LinearLayout(NavBarActivity.sContext);
-                                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                    linearLayout.setLayoutParams(layoutParams);
-                                    linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                    linearLayout.setPadding(0, 0, 0, dp(10));
-
-                                    ImageView imageView = new ImageView(NavBarActivity.sContext);
-                                    LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(dp(36), dp(36));
-                                    imageView.setLayoutParams(layoutParams2);
-                                    imageView.setPadding(dp(10), 0, 0, 0);
-
-                                    final long ONE_MEGABYTE = 1024 * 1024 * 5;
-                                    storageReference.child(data.getValue().toString()+".jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                imageLeader.setImageDrawable(roundDrawable);
+                            }
+                        });
+                        ref.child(data.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (data.getValue().toString().equals(user.getUid())){
+                                    leader = 1;
+                                    textViewLeader.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString()+ " (You)");
+                                }else{
+                                    textViewLeader.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString());
+                                    textViewLeader.setOnClickListener(new View.OnClickListener() {
                                         @Override
-                                        public void onSuccess(byte[] bytes) {
-                                            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                            float aspectRatio = bm.getWidth() /(float) bm.getHeight();
-
-                                            int width = 90;
-                                            int height = Math.round(width / aspectRatio);
-
-                                            bm = Bitmap.createScaledBitmap(bm, width, height, false);
-
-                                            imageView.setImageBitmap(bm);
+                                        public void onClick(View v) {
+                                            Fragment fragment = new ViewProfileFragment(data.getValue().toString());
+                                            replaceFragment(fragment);
                                         }
                                     });
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        });
+                    }else{
+                        ref.child(data.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                LinearLayout linearLayout = new LinearLayout(NavBarActivity.sContext);
+                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                linearLayout.setLayoutParams(layoutParams);
+                                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                linearLayout.setPadding(0, 0, 0, dp(10));
 
-                                    TextView textView = new TextView(NavBarActivity.sContext);
-                                    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                    textView.setLayoutParams(layoutParams1);
-                                    textView.setPadding(dp(10), dp(10), 0, 0);
-                                    if (data.getValue().toString().equals(user.getUid())){
-                                        textView.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString()+" (You)");
-                                    }else{
-                                        textView.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString());
-                                        textView.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Fragment fragment = new ViewProfileFragment(data.getValue().toString());
-                                                replaceFragment(fragment);
-                                            }
-                                        });
+                                ImageView imageView = new ImageView(NavBarActivity.sContext);
+                                LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(dp(36), dp(36));
+                                imageView.setLayoutParams(layoutParams2);
+                                imageView.setPadding(dp(10), 0, 0, 0);
+
+                                final long ONE_MEGABYTE = 1024 * 1024 * 5;
+                                storageReference.child(data.getValue().toString()+".jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                    @Override
+                                    public void onSuccess(byte[] bytes) {
+                                        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                        RoundedBitmapDrawable roundDrawable = RoundedBitmapDrawableFactory.create(NavBarActivity.sContext.getResources(), bm);
+                                        roundDrawable.setCircular(true);
+
+                                        imageView.setImageDrawable(roundDrawable);
                                     }
+                                });
 
-                                    linearLayout.addView(imageView);
-                                    linearLayout.addView(textView);
-
-                                    if (leader == 1 && NavBarActivity.roomStatus == null){
-                                        Button button = new Button(NavBarActivity.sContext);
-                                        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                        button.setLayoutParams(layoutParams3);
-                                        button.setText("KICK");
-                                        Log.d("EYY", x.toString());
-                                        button.setId(x);
-                                        ID[x] = data.getValue().toString();
-                                        button.setOnClickListener(InsideRoomFragment.this);
-                                        linearLayout.addView(button);
-                                        x++;
-                                    }
-
-                                    linearLayoutUsers.addView(linearLayout);
+                                TextView textView = new TextView(NavBarActivity.sContext);
+                                LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                textView.setLayoutParams(layoutParams1);
+                                textView.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.colorBlack));
+                                textView.setPadding(dp(10), dp(10), 0, 0);
+                                if (data.getValue().toString().equals(user.getUid())){
+                                    textView.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString()+" (You)");
+                                }else{
+                                    textView.setText(dataSnapshot.child("Fname").getValue().toString() + " " +dataSnapshot.child("Lname").getValue().toString());
+                                    textView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Fragment fragment = new ViewProfileFragment(data.getValue().toString());
+                                            replaceFragment(fragment);
+                                        }
+                                    });
                                 }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                linearLayout.addView(imageView);
+                                linearLayout.addView(textView);
 
+                                if (leader == 1 && NavBarActivity.roomStatus == null){
+                                    Button button = new Button(NavBarActivity.sContext);
+                                    LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    button.setLayoutParams(layoutParams3);
+                                    button.setText("KICK");
+                                    button.setId(x);
+                                    ID[x] = data.getValue().toString();
+                                    button.setOnClickListener(InsideRoomFragment.this);
+                                    linearLayout.addView(button);
+                                    x++;
                                 }
-                            });
-                            x = 0;
-                        }
+
+                                linearLayoutUsers.addView(linearLayout);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        x = 0;
                     }
+                }
 
-                    if (kick == 0){
-                        promptKick();
-                    }
-                    kick = 0;
-                databaseReference.child("Guests").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot data : dataSnapshot.getChildren()){
-                            LinearLayout linearLayout;
-                            linearLayout = new LinearLayout(NavBarActivity.sContext);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                            linearLayout.setLayoutParams(layoutParams);
-                            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                            linearLayout.setPadding(0, 0,0, dp(10));
-
-                            ImageView imageView = new ImageView(NavBarActivity.sContext);
-                            LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(dp(36), LinearLayout.LayoutParams.MATCH_PARENT);
-                            imageView.setLayoutParams(layoutParams1);
-                            imageView.setPadding(dp(10), 0, 0, 0);
-                            imageView.setImageDrawable(NavBarActivity.sContext.getResources().getDrawable(R.drawable.ic_user_icon));
-                            LinearLayout linearLayout1 = new LinearLayout(NavBarActivity.sContext);
-                            LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            linearLayout1.setLayoutParams(layoutParams3);
-                            linearLayout1.setPadding(dp(10), 0, 0, 0);
-                            linearLayout1.setOrientation(LinearLayout.VERTICAL);
-
-                            TextView textView = new TextView(NavBarActivity.sContext);
-                            LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                            textView.setLayoutParams(layoutParams2);
-                            textView.setText(data.child("Name").getValue().toString());
-
-                            TextView textView2 = new TextView(NavBarActivity.sContext);
-                            textView2.setLayoutParams(layoutParams2);
-
-                            ref.child(data.child("CompanionId").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    textView2.setText("Guest (with: " + dataSnapshot.child("Fname").getValue().toString() + " " + dataSnapshot.child("Lname").getValue().toString() + ")");
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                }
-                            });
-
-                            linearLayout1.addView(textView);
-                            linearLayout1.addView(textView2);
-
-                            linearLayout.addView(imageView);
-                            linearLayout.addView(linearLayout1);
-
-                            linearLayoutUsers.addView(linearLayout);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-                });
+                if (kick == 0){
+                    promptKick();
+                }
+                kick = 0;
             }
 
                 @Override
@@ -364,14 +305,72 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                 }
             });
 
-        buttonGuest.setOnClickListener(new View.OnClickListener() {
+        databaseReference.child("Guests").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                linearLayoutGuests.removeAllViews();
+                for (DataSnapshot data : dataSnapshot.getChildren()){
+                    LinearLayout linearLayout;
+                    linearLayout = new LinearLayout(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    linearLayout.setLayoutParams(layoutParams);
+                    linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    linearLayout.setPadding(0, 0,0, dp(10));
+
+                    ImageView imageView = new ImageView(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(dp(36), LinearLayout.LayoutParams.MATCH_PARENT);
+                    imageView.setLayoutParams(layoutParams1);
+                    imageView.setPadding(dp(10), 0, 0, 0);
+                    imageView.setImageDrawable(NavBarActivity.sContext.getResources().getDrawable(R.drawable.ic_user_icon));
+                    LinearLayout linearLayout1 = new LinearLayout(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                    linearLayout1.setLayoutParams(layoutParams3);
+                    linearLayout1.setPadding(dp(10), 0, 0, 0);
+                    linearLayout1.setOrientation(LinearLayout.VERTICAL);
+
+                    TextView textView = new TextView(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    textView.setLayoutParams(layoutParams2);
+                    textView.setText(data.child("Name").getValue().toString());
+                    textView.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.colorBlack));
+
+                    TextView textView2 = new TextView(NavBarActivity.sContext);
+                    textView2.setLayoutParams(layoutParams2);
+                    textView2.setTextColor(NavBarActivity.sContext.getResources().getColor(R.color.colorBlack));
+
+                    ref.child(data.child("CompanionId").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            textView2.setText("Guest (with: " + dataSnapshot.child("Fname").getValue().toString() + " " + dataSnapshot.child("Lname").getValue().toString() + ")");
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+
+                    linearLayout1.addView(textView);
+                    linearLayout1.addView(textView2);
+
+                    linearLayout.addView(imageView);
+                    linearLayout.addView(linearLayout1);
+
+                    linearLayoutGuests.addView(linearLayout);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+
+        cardViewGuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addGuest();
             }
         });
 
-        buttonDetails.setOnClickListener(new View.OnClickListener() {
+        cardViewDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -396,7 +395,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             }
         });
 
-        buttonMessages.setOnClickListener(new View.OnClickListener() {
+        cardViewMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Fragment fragment = new RoomMessagesFragment();
@@ -404,7 +403,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             }
         });
 
-        buttonTravel.setOnClickListener(new View.OnClickListener() {
+        cardViewTravel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Fragment fragment = new TakePicActivity();

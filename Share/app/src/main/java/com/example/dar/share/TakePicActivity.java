@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -22,8 +23,8 @@ import java.io.ByteArrayOutputStream;
 @SuppressLint("ValidFragment")
 public class TakePicActivity extends Fragment {
 
-    private Button buttonCamera;
-    private Button buttonProceed;
+    private Button buttonCamera, buttonProceed;
+    private RelativeLayout relativeLayout;
     private ImageView imageView;
     private Bitmap bitmap;
     private StorageReference storageReference;
@@ -40,6 +41,7 @@ public class TakePicActivity extends Fragment {
         buttonCamera = (Button) rootView.findViewById(R.id.buttonCamera);
         buttonProceed = (Button) rootView.findViewById(R.id.buttonProceed);
         imageView = (ImageView) rootView.findViewById(R.id.imageView);
+        relativeLayout = (RelativeLayout) rootView.findViewById(R.id.relativeLayout);
 
         buttonCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +67,9 @@ public class TakePicActivity extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         bitmap = (Bitmap)data.getExtras().get("data");
         imageView.setImageBitmap(bitmap);
+        buttonProceed.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.VISIBLE);
+        relativeLayout.setVisibility(View.GONE);
     }
 
     private void uploadFile(){

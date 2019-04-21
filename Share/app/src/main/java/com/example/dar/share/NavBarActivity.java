@@ -399,11 +399,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        Log.d("EYY", intent.getExtras().get("status").toString());
-
         if (intent.getExtras().get("status").toString().equals("start")){
-            databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(roomId);
-            databaseReference.child("Available").setValue(0);
             roomStatus = "start";
         }
 
@@ -435,12 +431,12 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
             @Override
             public void run() {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION )==
+                    if(ContextCompat.checkSelfPermission(sContext.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION )==
                             PackageManager.PERMISSION_GRANTED){
                         getLocation();
                     }else{
                         if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
-                            Toast.makeText(getApplicationContext(), "Application required to access location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(sContext.getApplicationContext(), "Application required to access location", Toast.LENGTH_SHORT).show();
                         }
                         requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_FINE_LOCATION_RESULT);
                     }
@@ -454,7 +450,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
 
     void getLocation(){
         try{
-            locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            locationManager = (LocationManager)sContext.getSystemService(Context.LOCATION_SERVICE);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
         }catch (SecurityException e){
             e.printStackTrace();
@@ -467,16 +463,16 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
 
         if(userLocation.distanceTo(destinationLocation) <= 4000){
             if(ctr == 0){
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                Vibrator vibrator = (Vibrator) sContext.getSystemService(sContext.VIBRATOR_SERVICE);
                 vibrator.vibrate(2000);
 
-                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                PowerManager powerManager = (PowerManager) sContext.getSystemService(Context.POWER_SERVICE);
                 @SuppressLint("InvalidWakeLockTag") PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "Tag");
                 wakeLock.acquire();
                 wakeLock.release();
 
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(NavBarActivity.sContext, "notify_001");
-                Intent ii = new Intent(getApplicationContext(), TravelPinActivity.class);
+                Intent ii = new Intent(sContext.getApplicationContext(), TravelPinActivity.class);
                 ii.putExtra("id", roomId);
                 ii.putExtra("status", "reached destination");
                 ii.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -490,7 +486,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
                 mBuilder.setAutoCancel(true);
 
                 NotificationManager mNotificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        (NotificationManager) sContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

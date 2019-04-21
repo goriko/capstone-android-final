@@ -29,7 +29,7 @@ public class TaxiDetailsActivity extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_taxi_details, container, false);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("travel").child(NavBarActivity.roomId);
 
         buttonProceed = (Button) rootView.findViewById(R.id.buttonProceed);
         edittextPlateNum = (EditText) rootView.findViewById(R.id.editTextPlateNum);
@@ -43,12 +43,14 @@ public class TaxiDetailsActivity extends Fragment {
                 String num = edittextNum.getText().toString();
                 String operator = edittextOperator.getText().toString();
                 Taxi taxi = new Taxi(plate, num, operator);
-                databaseReference.child("travel").child(NavBarActivity.roomId).child("taxi").setValue(taxi);
+                databaseReference.child("taxi").setValue(taxi);
 
                 NavBarActivity.roomStatus = "on going";
 
                 NavBarActivity.bottomNav.getMenu().getItem(1).setChecked(true);
                 NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
+
+                databaseReference.child("Available").setValue(0);
             }
         });
         return rootView;

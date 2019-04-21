@@ -20,9 +20,9 @@
         android:layout_marginBottom="15dp"
         android:id="@+id/logoMain"/>
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="82px"
-        android:src= "@drawable/login_cabshare"
+        android:src= "@drawable/share_logo"
         android:scaleType="fitCenter"
         android:layout_marginBottom="30dp"
         android:layout_below="@id/logoMain"
