@@ -8,6 +8,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,6 +26,8 @@ import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -335,6 +338,7 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
                         }
                     });
                     i++;
+                    showUsers();
                 }
             }else{
                 setCameraPosition(location);
@@ -364,5 +368,38 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         transaction.replace(R.id.fragmentContainer, someFragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    public void showUsers(){
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
+        databaseReference.child("users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()){
+                    if(!data.getValue().toString().equals(user.getUid())){
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(data.getValue().toString());
+                        reference.child("Location").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Log.d("EYY", dataSnapshot.child("Latitude").getValue().toString());
+                                Log.d("EYY", dataSnapshot.child("Longitude").getValue().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
