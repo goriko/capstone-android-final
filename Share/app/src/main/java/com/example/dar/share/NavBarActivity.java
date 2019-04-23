@@ -79,34 +79,6 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
 
         bottomNav = findViewById(R.id.bottom_navigation);
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                reference.child("Location").child("Latitude").setValue(location.getLatitude());
-                reference.child("Location").child("Longitude").setValue(location.getLongitude());
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
-
         reference = FirebaseDatabase.getInstance().getReference("users").child(userid);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -164,6 +136,35 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
                 return true;
             }
         });
+
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                reference.child("Location").child("Latitude").setValue(location.getLatitude());
+                reference.child("Location").child("Longitude").setValue(location.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
 
     }
 
