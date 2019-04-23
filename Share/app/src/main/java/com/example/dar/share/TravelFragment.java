@@ -380,11 +380,11 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
                 for (DataSnapshot data : dataSnapshot.getChildren()){
                     if(!data.getValue().toString().equals(user.getUid())){
                         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(data.getValue().toString());
-                        reference.child("Location").addValueEventListener(new ValueEventListener() {
+                        reference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Log.d("EYY", dataSnapshot.child("Latitude").getValue().toString());
-                                Log.d("EYY", dataSnapshot.child("Longitude").getValue().toString());
+                                map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(dataSnapshot.child("Location").child("Latitude").getValue().toString()), Double.parseDouble(dataSnapshot.child("Location").child("Longitude").getValue().toString())))
+                                        .title(dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString()));
                             }
 
                             @Override
