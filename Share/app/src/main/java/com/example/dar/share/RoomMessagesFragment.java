@@ -63,9 +63,8 @@ public class RoomMessagesFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 linearLayout.removeAllViews();
                 for (DataSnapshot data: dataSnapshot.getChildren()){
-                    long key = Long.parseLong(data.getKey().toString());
-                    String dateString = DateFormat.format("yyyy-MM-dd", new Date(key)).toString();
-                    String timeString = DateFormat.format("hh:mm:ss a", new Date(key)).toString();
+                    String dateString = data.child("Date").getValue().toString();
+                    String timeString = data.child("Time").getValue().toString();
                     String message = data.child("MessageText").getValue().toString();
                     String muser = data.child("MessageUser").getValue().toString();
 
@@ -171,10 +170,11 @@ public class RoomMessagesFragment extends Fragment {
     private void addMessage(){
         String str = editTextMessage.getText().toString();
         if (!str.equals("")){
-            Message m = new Message(str, user.getUid().toString());
             Date currentTime = Calendar.getInstance().getTime();
-            long key = currentTime.getTime();
-            databaseReference.child("messages").child(Long.toString(key)).setValue(m);
+            String dateString = DateFormat.format("yyyy-MM-dd", currentTime).toString();
+            String timeString = DateFormat.format("hh:mm:ss a", currentTime).toString();
+            Message m = new Message(str, user.getUid().toString(), timeString, dateString);
+            databaseReference.child("messages").push().setValue(m);
             editTextMessage.setText("");
             InputMethodManager imm = (InputMethodManager) NavBarActivity.sContext.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);

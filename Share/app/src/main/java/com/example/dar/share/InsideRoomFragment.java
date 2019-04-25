@@ -111,26 +111,6 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             }
         });
 
-        databaseReference.child("Available").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue().toString().equals("0")){
-                    NavBarActivity.roomStatus = "on going";
-                    cardViewGuest.setVisibility(View.GONE);
-                    cardViewTravel.setVisibility(View.GONE);
-                    NavBarActivity navBarActivity = new NavBarActivity();
-                    navBarActivity.tracker();
-                }else if (dataSnapshot.getValue().toString().equals("2")){
-                    NavBarActivity.roomStatus = "reached destination";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         if (NavBarActivity.roomStatus != null){
             if (NavBarActivity.roomStatus.equals("start")){
                 databaseReference.child("users").child("Leader").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -153,6 +133,28 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new RatingFragment(), "Rating").commitAllowingStateLoss();
             }
         }
+
+        databaseReference.child("Available").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue()!=null){
+                    if (dataSnapshot.getValue().toString().equals("0")){
+                        NavBarActivity.roomStatus = "on going";
+                        cardViewGuest.setVisibility(View.GONE);
+                        cardViewTravel.setVisibility(View.GONE);
+                        NavBarActivity navBarActivity = new NavBarActivity();
+                        navBarActivity.tracker();
+                    }else if (dataSnapshot.getValue().toString().equals("2")){
+                        NavBarActivity.roomStatus = "reached destination";
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

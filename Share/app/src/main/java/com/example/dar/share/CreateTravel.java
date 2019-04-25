@@ -1,5 +1,7 @@
 package com.example.dar.share;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -27,9 +29,11 @@ public class CreateTravel {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         ref = FirebaseDatabase.getInstance().getReference("users");
         user = FirebaseAuth.getInstance().getCurrentUser();
-        mKey = UUID.randomUUID().toString();
 
         AddTravelInformation addTravelInformation = new AddTravelInformation(origin, destination, originString, destinationString, 1, 1, fareFrom, fareTo, estimatedTravelTime);
+        DatabaseReference reference = databaseReference.child("travel").push();
+        mKey = reference.getKey();
+
         databaseReference.child("travel").child(mKey).setValue(addTravelInformation);
 
         Time time = new Time(departureHour, departureMinute);
