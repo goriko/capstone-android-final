@@ -87,12 +87,18 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             //email is empty
             Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();
             return;
-        }else if(TextUtils.isEmpty(password)){
+        }else if(TextUtils.isEmpty(password)) {
             //password is empty
             Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
             return;
         }else if(!password.equals(password2)){
             Toast.makeText(this, "Password don't match. Please enter the correct password", Toast.LENGTH_SHORT).show();
+            return;
+        }else if(!password.equals(FName)){
+            Toast.makeText(this, "Please enter the first name", Toast.LENGTH_SHORT).show();
+            return;
+        }else if(!password.equals(LName)){
+            Toast.makeText(this, "Please enter the last name", Toast.LENGTH_SHORT).show();
             return;
         }else if(android.util.Patterns.PHONE.matcher(Num).matches() == FALSE){
             Toast.makeText(this, "Please Enter a correct phone number", Toast.LENGTH_LONG).show();
