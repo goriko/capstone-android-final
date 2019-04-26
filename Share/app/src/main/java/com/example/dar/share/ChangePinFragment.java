@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,10 @@ public class ChangePinFragment extends Fragment implements View.OnClickListener{
 
     private void firstClick(){
         checkPin = pinview.getValue().toString();
+        if (TextUtils.isEmpty(checkPin)){
+            Toast.makeText(NavBarActivity.sContext, "Please enter your pin number", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (!checkPin.equals(truePin)){
             Toast.makeText(getActivity(), "Please enter the right pin number", Toast.LENGTH_SHORT).show();
             clearPinViewChild();
@@ -98,6 +103,10 @@ public class ChangePinFragment extends Fragment implements View.OnClickListener{
 
     private void secondClick(){
         newPin = pinview.getValue().toString();
+        if (TextUtils.isEmpty(newPin)){
+            Toast.makeText(NavBarActivity.sContext, "Please enter your pin number", Toast.LENGTH_SHORT).show();
+            return;
+        }
         click++;
         textView.setText("Please enter new Pin Number again to verify");
         clearPinViewChild();
@@ -105,7 +114,10 @@ public class ChangePinFragment extends Fragment implements View.OnClickListener{
 
     private void thirdClick(){
         verifyPin = pinview.getValue().toString();
-        if(!newPin.equals(verifyPin)){
+        if (TextUtils.isEmpty(verifyPin)){
+            Toast.makeText(NavBarActivity.sContext, "Please enter your pin number", Toast.LENGTH_SHORT).show();
+            return;
+        }else if(!newPin.equals(verifyPin)){
             Toast.makeText(getActivity(), "Please enter the right Pin Number", Toast.LENGTH_SHORT).show();
             textView.setText("Please enter new Pin Number");
             clearPinViewChild();

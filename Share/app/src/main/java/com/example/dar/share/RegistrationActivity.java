@@ -94,15 +94,29 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }else if(!password.equals(password2)){
             Toast.makeText(this, "Password don't match. Please enter the correct password", Toast.LENGTH_SHORT).show();
             return;
-        }else if(!password.equals(FName)){
-            Toast.makeText(this, "Please enter the first name", Toast.LENGTH_SHORT).show();
+        }else if(TextUtils.isEmpty(FName)){
+            Toast.makeText(this, "Please enter a first name", Toast.LENGTH_SHORT).show();
             return;
-        }else if(!password.equals(LName)){
-            Toast.makeText(this, "Please enter the last name", Toast.LENGTH_SHORT).show();
+        }else if (!FName.matches("[a-zA-Z]+")){
+            Toast.makeText(this, "Invalid first name", Toast.LENGTH_SHORT).show();
+            editTextFName.setText("");
+            return;
+        }else if(TextUtils.isEmpty(LName)){
+            Toast.makeText(this, "Please enter a last name", Toast.LENGTH_SHORT).show();
+            return;
+        }else if (!LName.matches("[a-zA-Z]+")){
+            Toast.makeText(this, "Invalid last name", Toast.LENGTH_SHORT).show();
+            editTextFName.setText("");
+            return;
+        }else if(TextUtils.isEmpty(Num)){
+            Toast.makeText(this, "Please enter a phone number", Toast.LENGTH_SHORT).show();
             return;
         }else if(android.util.Patterns.PHONE.matcher(Num).matches() == FALSE){
-            Toast.makeText(this, "Please Enter a correct phone number", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter a correct phone number", Toast.LENGTH_LONG).show();
             editTextContactNumber.setText("");
+            return;
+        }else if(TextUtils.isEmpty(GuardianNum)){
+            Toast.makeText(this, "Please enter a guardian phone number", Toast.LENGTH_SHORT).show();
             return;
         }else if(android.util.Patterns.PHONE.matcher(GuardianNum).matches() == FALSE){
             Toast.makeText(this, "Please Enter a correct phone number", Toast.LENGTH_LONG).show();

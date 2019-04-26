@@ -71,7 +71,7 @@ public class PinNumberActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         if (i==0){
             pin1 = pinView.getValue().toString();
-            textViewPin.setText("Please re-enter pin again");
+            textViewPin.setText("Please re-enter pin number");
             clearPinViewChild();
             i=1;
         }else{

@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -160,16 +161,19 @@ public class RoomMessagesFragment extends Fragment {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMessage();
+                String temp = addMessage();
+                if(temp != null){
+                    Toast.makeText(getActivity(), temp, Toast.LENGTH_LONG);
+                }
             }
         });
 
         return rootView;
     }
 
-    private void addMessage(){
+    private String addMessage(){
         String str = editTextMessage.getText().toString();
-        if (!str.equals("")){
+        if (!str.isEmpty()){
             Date currentTime = Calendar.getInstance().getTime();
             String dateString = DateFormat.format("yyyy-MM-dd", currentTime).toString();
             String timeString = DateFormat.format("hh:mm:ss a", currentTime).toString();
@@ -178,6 +182,9 @@ public class RoomMessagesFragment extends Fragment {
             editTextMessage.setText("");
             InputMethodManager imm = (InputMethodManager) NavBarActivity.sContext.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+            return null;
+        }else {
+            return "Enter a message";
         }
     }
 

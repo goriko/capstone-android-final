@@ -557,12 +557,12 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         alarm_time.set(Calendar.MINUTE, departureMinute);
         alarm_time.set(Calendar.SECOND, 0);
 
-        if (departureMinute >= 3) {
+        if (departureMinute >= 5) {
             alarm_advance.set(Calendar.HOUR_OF_DAY, departureHour);
-            alarm_advance.set(Calendar.MINUTE, departureMinute - 3);
+            alarm_advance.set(Calendar.MINUTE, departureMinute - 5);
             alarm_advance.set(Calendar.SECOND, 0);
         } else {
-            int i = 3 - departureMinute;
+            int i = 5 - departureMinute;
             alarm_advance.set(Calendar.HOUR_OF_DAY, departureHour - 1);
             alarm_advance.set(Calendar.MINUTE, 60 - i);
             alarm_advance.set(Calendar.SECOND, 0);

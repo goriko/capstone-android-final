@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,18 @@ public class ChangePasswordFragment extends Fragment {
                 String oldPass = editTextOld.getText().toString();
                 String newPass = editTextNew.getText().toString();
                 String confirmPass = editTextVerify.getText().toString();
+
+                if(TextUtils.isEmpty(oldPass)){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter your password", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(TextUtils.isEmpty(oldPass)){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter your new password", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(TextUtils.isEmpty(oldPass)){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter your new password again for confirmation", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 final String email = user.getEmail();
                 AuthCredential credential = EmailAuthProvider.getCredential(email,oldPass);
 
@@ -77,6 +90,8 @@ public class ChangePasswordFragment extends Fragment {
                                             progressDialog.dismiss();
                                             fragment = new ProfileFragment();
                                             replaceFragment(fragment);
+                                        }else{
+                                            Toast.makeText(getActivity(), task.getException().toString(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });

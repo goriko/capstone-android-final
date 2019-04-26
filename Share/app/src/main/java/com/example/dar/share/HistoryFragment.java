@@ -84,6 +84,15 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
                         }
                     }
                 }
+
+                if (x == 0){
+                    TextView textView = new TextView(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    textView.setLayoutParams(layoutParams);
+                    textView.setText("No previous travels");
+                    textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    linearLayout.addView(textView);
+                }
                 progressDialog.dismiss();
             }
 

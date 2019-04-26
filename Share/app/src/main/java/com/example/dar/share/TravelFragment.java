@@ -124,8 +124,13 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onClick(View v) {
                 if (!editTextOrigin.getText().toString().equals("") && !editTextDestination.getText().toString().equals("")){
-                    buttonFindRoom.setVisibility(View.VISIBLE);
-                    geoLocate(editTextOrigin.getText().toString(), editTextDestination.getText().toString());
+                    String temp = geoLocate(editTextOrigin.getText().toString(), editTextDestination.getText().toString());
+                    if (!temp.isEmpty()){
+                        Toast.makeText(getActivity().getApplicationContext(), temp, Toast.LENGTH_SHORT).show();
+                        buttonFindRoom.setVisibility(View.GONE);
+                    }else{
+                        buttonFindRoom.setVisibility(View.VISIBLE);
+                    }
                     InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
                 }else{
@@ -145,7 +150,7 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         return rootView;
     }
 
-    private void geoLocate(String Origin, String Destination) {
+    private String geoLocate(String Origin, String Destination) {
         originString = Origin;
         destinationString = Destination;
         Geocoder geocoder = new Geocoder(sContext);
@@ -153,20 +158,33 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
         try{
             list = geocoder.getFromLocationName(originString, 1);
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(NavBarActivity.sContext, e.getMessage().toString(), Toast.LENGTH_LONG);
+            return e.getMessage();
         }
-        Address originAddress = list.get(0);
 
-        try{
-            list = geocoder.getFromLocationName(destinationString, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (list.size() == 0){
+            return "Invalid address";
+        }else{
+            Address originAddress = list.get(0);
+
+            try{
+                list = geocoder.getFromLocationName(destinationString, 1);
+            } catch (IOException e) {
+                Toast.makeText(NavBarActivity.sContext, e.getMessage().toString(), Toast.LENGTH_LONG);
+                return e.getMessage();
+            }
+
+            if (list.size() == 0){
+                Toast.makeText(NavBarActivity.sContext, "Invalid address", Toast.LENGTH_LONG);
+                return "Invalid address";
+            }else{
+                Address destinationAddress = list.get(0);
+
+                mark(originAddress, destinationAddress);
+                getRoute(originAddress, destinationAddress);
+            }
         }
-        Address destinationAddress = list.get(0);
-
-        mark(originAddress, destinationAddress);
-        getRoute(originAddress, destinationAddress);
-
+        return "";
     }
     public void mark(Address origin, Address destination){
         originLatlng = new LatLng(origin.getLatitude(), origin.getLongitude());

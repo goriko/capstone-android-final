@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
+
+import static java.lang.Boolean.FALSE;
 
 public class EditProfileFragment extends Fragment {
 
@@ -119,11 +122,43 @@ public class EditProfileFragment extends Fragment {
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                databaseReference.child("Fname").setValue(editTextfname.getText().toString());
-                databaseReference.child("Lname").setValue(editTextlname.getText().toString());
-                databaseReference.child("ContactNumber").setValue(editTextnumber.getText().toString());
-                databaseReference.child("EmergencyContact").setValue(editTextgnumber.getText().toString());
-                databaseReference.child("Gender").setValue(spinnerGender.getSelectedItem().toString());
+                String Fname = editTextfname.getText().toString();
+                String Lname = editTextlname.getText().toString();
+                String Num = editTextnumber.getText().toString();
+                String guardiannum = editTextgnumber.getText().toString();
+                String gender = spinnerGender.getSelectedItem().toString();
+
+                if(TextUtils.isEmpty(Fname)){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter a first name", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if (!Fname.matches("[a-zA-Z]+")){
+                    Toast.makeText(NavBarActivity.sContext, "Invalid first name", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(TextUtils.isEmpty(Lname)){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter a last name", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if (!Lname.matches("[a-zA-Z]+")){
+                    Toast.makeText(NavBarActivity.sContext, "Invalid last name", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(TextUtils.isEmpty(Num)){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter a phone number", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(android.util.Patterns.PHONE.matcher(Num).matches() == FALSE){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter a correct phone number", Toast.LENGTH_LONG).show();
+                    return;
+                }else if(TextUtils.isEmpty(guardiannum)){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter a guardian phone number", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(android.util.Patterns.PHONE.matcher(guardiannum).matches() == FALSE){
+                    Toast.makeText(NavBarActivity.sContext, "Please Enter a correct phone number", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                databaseReference.child("Fname").setValue(Fname);
+                databaseReference.child("Lname").setValue(Lname);
+                databaseReference.child("ContactNumber").setValue(Num);
+                databaseReference.child("EmergencyContact").setValue(guardiannum);
+                databaseReference.child("Gender").setValue(gender);
 
                 if (filePath != null){
                     storageReference.putFile(filePath);
