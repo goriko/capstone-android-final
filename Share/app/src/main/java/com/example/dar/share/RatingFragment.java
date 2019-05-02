@@ -74,6 +74,7 @@ public class RatingFragment extends Fragment {
 
                         TextView textView = new TextView(NavBarActivity.sContext);
                         textView.setLayoutParams(layoutParams);
+                        textView.setTextColor(getResources().getColor(R.color.colorBlack));
                         reference.child(data.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -96,6 +97,9 @@ public class RatingFragment extends Fragment {
                         EditText editText = new EditText(NavBarActivity.sContext);
                         editText.setId(x+5);
                         editText.setLayoutParams(layoutParams);
+                        editText.setTextColor(getResources().getColor(R.color.colorBlack));
+                        editText.setHint("Comment");
+                        editText.setHighlightColor(getResources().getColor(R.color.colorBlack));
 
                         linearLayout1.addView(textView);
                         linearLayout1.addView(ratingBar);

@@ -62,25 +62,11 @@ public class AddMember {
 
                 }
             });
-        }else{
-            databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(i == 0){
-                        Guest guest = new Guest(user.getUid(), name);
-                        if(!dataSnapshot.hasChild("Guest1")){
-                            databaseReference.child("Guests").child("Guest1").setValue(guest);
-                        }else{
-                            databaseReference.child("Guests").child("Guest2").setValue(guest);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+        }else {
+            DatabaseReference reference = databaseReference.child("Guests").push();
+            String mKey = reference.getKey();
+            Guest guest = new Guest(user.getUid(), name);
+            databaseReference.child("Guests").child(mKey).setValue(guest);
         }
     }
 
