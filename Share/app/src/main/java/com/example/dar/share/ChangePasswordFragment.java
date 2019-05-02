@@ -64,12 +64,15 @@ public class ChangePasswordFragment extends Fragment {
 
                 if(TextUtils.isEmpty(oldPass)){
                     Toast.makeText(NavBarActivity.sContext, "Please enter your password", Toast.LENGTH_SHORT).show();
+                    progressDialog.cancel();
                     return;
                 }else if(TextUtils.isEmpty(oldPass)){
                     Toast.makeText(NavBarActivity.sContext, "Please enter your new password", Toast.LENGTH_SHORT).show();
+                    progressDialog.cancel();
                     return;
                 }else if(TextUtils.isEmpty(oldPass)){
                     Toast.makeText(NavBarActivity.sContext, "Please enter your new password again for confirmation", Toast.LENGTH_SHORT).show();
+                    progressDialog.cancel();
                     return;
                 }
 
@@ -80,7 +83,6 @@ public class ChangePasswordFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
-
                             if(newPass.equals(confirmPass)){
                                 user.updatePassword(newPass).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -92,6 +94,7 @@ public class ChangePasswordFragment extends Fragment {
                                             replaceFragment(fragment);
                                         }else{
                                             Toast.makeText(getActivity(), task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                            progressDialog.cancel();
                                         }
                                     }
                                 });
