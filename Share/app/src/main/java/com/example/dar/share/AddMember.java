@@ -26,7 +26,7 @@ public class AddMember {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String NoOfUsers = dataSnapshot.getValue().toString();
                 Integer x = Integer.valueOf(NoOfUsers) + 1;
-                databaseReference.child("NoOfUsers").setValue(x.toString());
+                databaseReference.child("NoOfUsers").setValue(x);
 
                 if(x == 4){
                     databaseReference.child("Available").setValue(3);

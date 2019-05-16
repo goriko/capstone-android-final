@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,6 +102,13 @@ public class ProfileFragment extends Fragment {
                         cardView.setLayoutParams(layoutParams);
                         cardView.setUseCompatPadding(true);
 
+                        RatingBar ratingBar = new RatingBar(NavBarActivity.sContext);
+                        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        ratingBar.setLayoutParams(layoutParams3);
+                        ratingBar.setNumStars(5);
+                        ratingBar.setRating(Float.parseFloat(data.child("Rating").getValue().toString()));
+                        ratingBar.setIsIndicator(true);
+
                         LinearLayout linearLayout = new LinearLayout(NavBarActivity.sContext);
                         layoutParams.setMargins(0, dp(10), 0, 0);
                         linearLayout.setLayoutParams(layoutParams);
@@ -149,6 +157,7 @@ public class ProfileFragment extends Fragment {
                             }
                         });
 
+                        linearLayout1.addView(ratingBar);
                         linearLayout1.addView(textView);
                         linearLayout1.addView(textView1);
                         linearLayout.addView(imageView);

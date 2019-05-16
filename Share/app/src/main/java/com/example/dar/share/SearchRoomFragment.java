@@ -4,8 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -25,13 +29,18 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @SuppressLint("ValidFragment")
 public class SearchRoomFragment extends Fragment {
+
+    private final int TIME_PICKER_INTERVAL = 5;
 
     private View rootView;
 
@@ -109,6 +118,7 @@ public class SearchRoomFragment extends Fragment {
         return rootView;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void setTime(){
         Calendar calendar = Calendar.getInstance();
         int hours = calendar.get(Calendar.HOUR);
@@ -131,6 +141,7 @@ public class SearchRoomFragment extends Fragment {
                 textViewTime.setText(dateFormat2.format(date));
             }
         }, hours, minutes, false);
+
         timePickerDialog.show();
     }
 
