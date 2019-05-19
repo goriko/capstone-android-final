@@ -63,7 +63,7 @@ import retrofit2.Response;
 @SuppressLint("ValidFragment")
 public class RoomFragment extends Fragment implements View.OnClickListener {
 
-    private Integer x = 0, departureHour, departureMinute, fareFrom, fareTo, estimatedTravelTime;
+    private Integer x = 0, departureHour, departureMinute, fareFrom, fareTo, estimatedTravelTime, guest;
     private String[] str = new String[100];
     private String originString, destinationString;
     private LatLng originLatLng, destinationLatLng;
@@ -78,13 +78,14 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
 
-    public RoomFragment(String origin, LatLng originLatLng, String destination, LatLng destinationLatLng, Integer departureHour, Integer departureMinute){
+    public RoomFragment(String origin, LatLng originLatLng, String destination, LatLng destinationLatLng, Integer departureHour, Integer departureMinute, Integer guest){
         this.originString = origin;
         this.originLatLng = originLatLng;
         this.destinationString = destination;
         this.destinationLatLng = destinationLatLng;
         this.departureHour = departureHour;
         this.departureMinute = departureMinute;
+        this.guest = guest;
     }
 
     @Override
@@ -114,13 +115,15 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         LatLng dataDestination = new LatLng(convert(Double.parseDouble(data.child("Destination").child("latitude").getValue().toString())), convert(Double.parseDouble(data.child("Destination").child("longitude").getValue().toString())));
                         if (dataOrigin.equals(userOrigin) && dataDestination.equals(userDestination)) {
                             if (departureHour == null) {
-                                x++;
-                                layout(x, data);
+                                if (Integer.parseInt(data.child("NoOfUsers").getValue().toString())+guest <=4){
+                                    x++;
+                                    layout(x, data);
+                                }
                             } else {
                                 if (data.child("DepartureTime").child("DepartureHour").getValue() != null && data.child("DepartureTime").child("DepartureMinute").getValue() != null){
                                     Integer hour = Integer.parseInt(data.child("DepartureTime").child("DepartureHour").getValue().toString());
                                     Integer minute = Integer.parseInt(data.child("DepartureTime").child("DepartureMinute").getValue().toString());
-                                    if (departureHour == hour && departureMinute == minute){
+                                    if (departureHour == hour && departureMinute == minute && Integer.parseInt(data.child("NoOfUsers").getValue().toString())+guest <=4){
                                         x++;
                                         layout(x,data);
                                     }

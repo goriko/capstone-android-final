@@ -146,6 +146,7 @@
                         android:textSize="14sp" />
 
                     <EditText
+                        android:inputType="phone"
                         android:id="@+id/editTextNumber"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -173,6 +174,7 @@
                         android:textSize="14sp" />
 
                     <EditText
+                        android:inputType="phone"
                         android:id="@+id/editTextGuardianNumber"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"

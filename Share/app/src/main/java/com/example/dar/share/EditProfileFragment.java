@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,9 +125,12 @@ public class EditProfileFragment extends Fragment {
             public void onClick(View v) {
                 String Fname = editTextfname.getText().toString();
                 String Lname = editTextlname.getText().toString();
-                String Num = editTextnumber.getText().toString();
-                String guardiannum = editTextgnumber.getText().toString();
                 String gender = spinnerGender.getSelectedItem().toString();
+
+                TelephoneNumberCanonicalizer telephoneNumberCanonicalizer = new TelephoneNumberCanonicalizer("63");
+                String Num = telephoneNumberCanonicalizer.canonicalize(editTextnumber.getText().toString());
+                String guardiannum = telephoneNumberCanonicalizer.canonicalize(editTextgnumber.getText().toString());
+
 
                 if(TextUtils.isEmpty(Fname)){
                     Toast.makeText(NavBarActivity.sContext, "Please enter a first name", Toast.LENGTH_SHORT).show();
@@ -143,14 +147,14 @@ public class EditProfileFragment extends Fragment {
                 }else if(TextUtils.isEmpty(Num)){
                     Toast.makeText(NavBarActivity.sContext, "Please enter a phone number", Toast.LENGTH_SHORT).show();
                     return;
-                }else if(android.util.Patterns.PHONE.matcher(Num).matches() == FALSE){
+                }else if(Num.length() != 13){
                     Toast.makeText(NavBarActivity.sContext, "Please enter a correct phone number", Toast.LENGTH_LONG).show();
                     return;
                 }else if(TextUtils.isEmpty(guardiannum)){
                     Toast.makeText(NavBarActivity.sContext, "Please enter a guardian phone number", Toast.LENGTH_SHORT).show();
                     return;
-                }else if(android.util.Patterns.PHONE.matcher(guardiannum).matches() == FALSE){
-                    Toast.makeText(NavBarActivity.sContext, "Please Enter a correct phone number", Toast.LENGTH_LONG).show();
+                }else if(guardiannum.length() != 13){
+                    Toast.makeText(NavBarActivity.sContext, "Please enter a correct phone number", Toast.LENGTH_LONG).show();
                     return;
                 }
 

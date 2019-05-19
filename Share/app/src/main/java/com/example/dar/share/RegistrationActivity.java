@@ -80,8 +80,10 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         String FName = editTextFName.getText().toString().trim();
         String LName = editTextLName.getText().toString().trim();
         String Gender = spinnerGender.getSelectedItem().toString();
-        String Num = editTextContactNumber.getText().toString().trim();
-        String GuardianNum = editTextGContactNumber.getText().toString().trim();
+
+        TelephoneNumberCanonicalizer telephoneNumberCanonicalizer = new TelephoneNumberCanonicalizer("63");
+        String Num = telephoneNumberCanonicalizer.canonicalize(editTextContactNumber.getText().toString());
+        String GuardianNum = telephoneNumberCanonicalizer.canonicalize(editTextGContactNumber.getText().toString());
 
         if(TextUtils.isEmpty(email)){
             //email is empty
@@ -111,14 +113,14 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }else if(TextUtils.isEmpty(Num)){
             Toast.makeText(this, "Please enter a phone number", Toast.LENGTH_SHORT).show();
             return;
-        }else if(android.util.Patterns.PHONE.matcher(Num).matches() == FALSE){
+        }else if(Num.length() != 13){
             Toast.makeText(this, "Please enter a correct phone number", Toast.LENGTH_LONG).show();
             editTextContactNumber.setText("");
             return;
         }else if(TextUtils.isEmpty(GuardianNum)){
             Toast.makeText(this, "Please enter a guardian phone number", Toast.LENGTH_SHORT).show();
             return;
-        }else if(android.util.Patterns.PHONE.matcher(GuardianNum).matches() == FALSE){
+        }else if(GuardianNum.length() != 13){
             Toast.makeText(this, "Please Enter a correct phone number", Toast.LENGTH_LONG).show();
             editTextGContactNumber.setText("");
             return;
@@ -162,7 +164,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 if (task.isSuccessful()){
                     progressDialog.cancel();
                     Toast.makeText(RegistrationActivity.this, "Information Saved...", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(getApplicationContext(), EmailVerificationActivity.class));
+                    startActivity(new Intent(getApplicationContext(), PinNumberActivity.class));
                 }
             }
         });

@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -40,15 +41,14 @@ import java.util.List;
 @SuppressLint("ValidFragment")
 public class SearchRoomFragment extends Fragment {
 
-    private final int TIME_PICKER_INTERVAL = 5;
-
     private View rootView;
 
     private TextView textViewTime;
     private Button buttonTime, buttonFind;
     private AutoCompleteTextView editTextOrigin, editTextDestination;
+    private EditText editTextGuest;
 
-    private Integer departureHour = null, departureMinute = null;
+    private Integer departureHour = null, departureMinute = null, guest = null;
     private String originString, destinationString;
     private LatLng originLatLng, destinationLatLng;
 
@@ -72,6 +72,7 @@ public class SearchRoomFragment extends Fragment {
         buttonFind = (Button) rootView.findViewById(R.id.buttonFind);
         editTextOrigin = (AutoCompleteTextView) rootView.findViewById(R.id.editTextOrigin);
         editTextDestination = (AutoCompleteTextView) rootView.findViewById(R.id.editTextDestination);
+        editTextGuest = (EditText) rootView.findViewById(R.id.editTextGuest);
 
         editTextOrigin.setText(originString);
         editTextDestination.setText(destinationString);
@@ -87,6 +88,10 @@ public class SearchRoomFragment extends Fragment {
                 e.printStackTrace();
             }
             textViewTime.setText(dateFormat2.format(date));
+        }
+
+        if (guest!=null){
+            editTextGuest.setText(guest.toString());
         }
 
         GeoDataClient geoDataClient = Places.getGeoDataClient(NavBarActivity.sContext, null);
@@ -107,7 +112,8 @@ public class SearchRoomFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!editTextOrigin.getText().toString().equals("") && !editTextDestination.getText().toString().equals("")){
-                    Fragment fragment = new RoomFragment(originString, originLatLng, destinationString, destinationLatLng, departureHour, departureMinute);
+                    guest = Integer.parseInt(editTextGuest.getText().toString());
+                    Fragment fragment = new RoomFragment(originString, originLatLng, destinationString, destinationLatLng, departureHour, departureMinute, guest);
                     replaceFragment(fragment);
                 }else{
                     Toast.makeText(NavBarActivity.sContext, "Please enter origin and destination addresses", Toast.LENGTH_SHORT).show();
@@ -118,13 +124,12 @@ public class SearchRoomFragment extends Fragment {
         return rootView;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void setTime(){
         Calendar calendar = Calendar.getInstance();
         int hours = calendar.get(Calendar.HOUR);
         int minutes = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
+        CustomTimePickerDialog customTimePickerDialog = new CustomTimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 departureHour = hourOfDay;
@@ -142,7 +147,7 @@ public class SearchRoomFragment extends Fragment {
             }
         }, hours, minutes, false);
 
-        timePickerDialog.show();
+        customTimePickerDialog.show();
     }
 
     public void replaceFragment(Fragment someFragment) {

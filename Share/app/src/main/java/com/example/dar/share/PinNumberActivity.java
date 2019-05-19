@@ -56,7 +56,7 @@ public class PinNumberActivity extends AppCompatActivity implements View.OnClick
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
         databaseReference.child("users").child(user.getUid().toString()).child("Pin").setValue(pin);
-        startActivity(new Intent(getApplicationContext(), NavBarActivity.class));
+        startActivity(new Intent(getApplicationContext(), EmailVerificationActivity.class));
     }
 
     private void clearPinViewChild() {

@@ -59,6 +59,6 @@ public class EmailVerificationActivity extends AppCompatActivity implements View
 
     @Override
     public void onClick(View v) {
-        startActivity(new Intent(this, PinNumberActivity.class));
+        startActivity(new Intent(this, NavBarActivity.class));
     }
 }
