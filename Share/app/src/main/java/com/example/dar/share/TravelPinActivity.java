@@ -52,7 +52,7 @@ public class TravelPinActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
         reference = FirebaseDatabase.getInstance().getReference("users");
 
-        databaseReference.child("Available").setValue("2");
+        databaseReference.child("Available").setValue(2);
 
         NavBarActivity.roomStatus = "reached destination";
 

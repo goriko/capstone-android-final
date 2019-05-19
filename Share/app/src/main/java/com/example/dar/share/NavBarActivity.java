@@ -462,7 +462,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     public void onLocationChanged(Location location) {
         userLocation = location;
 
-        if(userLocation.distanceTo(destinationLocation) <= 4000){
+        if(userLocation.distanceTo(destinationLocation) <= 1000){
             if(ctr == 0){
                 Vibrator vibrator = (Vibrator) sContext.getSystemService(sContext.VIBRATOR_SERVICE);
                 vibrator.vibrate(2000);
