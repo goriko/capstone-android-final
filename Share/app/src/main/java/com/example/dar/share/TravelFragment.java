@@ -76,6 +76,8 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
 
     private View rootView;
 
+    public List<Marker> mark = new ArrayList<>();
+
     private int i = 0;
 
     private MapView mapView;
@@ -403,8 +405,14 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
                         reference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(dataSnapshot.child("Location").child("Latitude").getValue().toString()), Double.parseDouble(dataSnapshot.child("Location").child("Longitude").getValue().toString())))
-                                        .title(dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString()));
+                                for (Marker temp : mark){
+                                    if(temp.getTitle().equals(dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString())){
+                                        map.removeMarker(temp);
+                                        temp.remove();
+                                    }
+                                }
+                                mark.add(map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(dataSnapshot.child("Location").child("Latitude").getValue().toString()), Double.parseDouble(dataSnapshot.child("Location").child("Longitude").getValue().toString())))
+                                        .title(dataSnapshot.child("Fname").getValue().toString()+" "+dataSnapshot.child("Lname").getValue().toString())));
                             }
 
                             @Override
