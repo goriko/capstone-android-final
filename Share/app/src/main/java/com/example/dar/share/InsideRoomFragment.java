@@ -93,6 +93,61 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         ref = FirebaseDatabase.getInstance().getReference("users");
         storageReference = FirebaseStorage.getInstance().getReference("profile/");
 
+        databaseReference.child("users").child("Leader").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue().toString().equals(user.getUid().toString())){
+                    databaseReference.child("pendingusers").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                for (DataSnapshot data: dataSnapshot.getChildren()){
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                                    builder1.setMessage("___ has requested to join the room");
+                                    builder1.setCancelable(true);
+                                    builder1.setPositiveButton(
+                                            "Accept",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    AddMember addMember = new AddMember();
+                                                    addMember.add(NavBarActivity.roomId, null, data.child("UserId").getValue().toString());
+                                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId).child("pendingusers");
+                                                    ref.child(data.getKey()).removeValue();
+
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                    builder1.setNegativeButton(
+                                            "Decline",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    Log.d("EYY",data.getKey());
+                                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId).child("pendingusers");
+                                                    ref.child(data.getKey()).removeValue();
+
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                    AlertDialog alert11 = builder1.create();
+                                    alert11.show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -434,7 +489,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 AddMember guest = new AddMember();
-                guest.add(NavBarActivity.roomId, input.getText().toString());
+                guest.add(NavBarActivity.roomId, input.getText().toString(), null);
             }
         });
 
@@ -456,65 +511,89 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View v) {
         int num = v.getId();
-        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    String value = data.getValue().toString();
-                    String key = data.getKey().toString();
-                    if (value.equals(ID[num])) {
-                        databaseReference.child("users").child(key).removeValue();
-                        removed++;
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(InsideRoomFragment.this.getContext());
+        builder1.setMessage("Are you sure you want to kick this user?");
+        builder1.setCancelable(false);
+
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                    String value = data.getValue().toString();
+                                    String key = data.getKey().toString();
+                                    if (value.equals(ID[num])) {
+                                        databaseReference.child("users").child(key).removeValue();
+                                        removed++;
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError){
+
+                            }
+                        });
+
+                        databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot data : dataSnapshot.getChildren()){
+                                    if(data.child("CompanionId").getValue().toString().equals(ID[num])){
+                                        databaseReference.child("Guests").child(data.getKey().toString()).removeValue();
+                                        removed++;
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        databaseReference.child("NoOfUsers").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                x = Integer.valueOf(dataSnapshot.getValue().toString()) - removed;
+                                databaseReference.child("Available").setValue(1);
+                                databaseReference.child("NoOfUsers").setValue(x);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        ref.child(ID[num]).child("CurRoom").setValue("0");
+
+                        removed=0;
+
+                        dialog.cancel();
+
                     }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError){
+                });
 
-            }
-        });
-
-        databaseReference.child("Guests").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data : dataSnapshot.getChildren()){
-                    if(data.child("CompanionId").getValue().toString().equals(ID[num])){
-                        databaseReference.child("Guests").child(data.getKey().toString()).removeValue();
-                        removed++;
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
                     }
-                }
-            }
+                });
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseReference.child("NoOfUsers").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                x = Integer.valueOf(dataSnapshot.getValue().toString()) - removed;
-                databaseReference.child("Available").setValue(1);
-                databaseReference.child("NoOfUsers").setValue(x);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        ref.child(ID[num]).child("CurRoom").setValue("0");
-
-        removed=0;
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
     private void promptKick(){
         if(InsideRoomFragment.this.getContext() != null){
             NavBarActivity.roomId = NavBarActivity.roomStatus = null;
             AlertDialog.Builder builder1 = new AlertDialog.Builder(InsideRoomFragment.this.getContext());
-            builder1.setMessage("Are you sure you want to close the application?");
+            builder1.setMessage("You have been kicked from the room by the leader");
             builder1.setCancelable(false);
 
             builder1.setPositiveButton(
@@ -523,14 +602,6 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                         public void onClick(DialogInterface dialog, int id) {
                             NavBarActivity.bottomNav.getMenu().getItem(0).setChecked(true);
                             NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_travel);
-                        }
-                    });
-
-            builder1.setNegativeButton(
-                    "No",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
                         }
                     });
 

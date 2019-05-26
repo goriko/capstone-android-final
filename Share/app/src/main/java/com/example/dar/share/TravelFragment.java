@@ -346,6 +346,7 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
             if(NavBarActivity.roomId != null) {
                 if (i == 0){
                     buttonLocate.setVisibility(View.GONE);
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId);
                     databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -360,7 +361,22 @@ public class TravelFragment extends Fragment implements OnMapReadyCallback,
                         }
                     });
                     i++;
-                    showUsers();
+
+                    databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(DataSnapshot data : dataSnapshot.getChildren()){
+                                if (data.getValue().toString().equals(user.getUid())){
+                                    showUsers();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             }else{
                 setCameraPosition(location);

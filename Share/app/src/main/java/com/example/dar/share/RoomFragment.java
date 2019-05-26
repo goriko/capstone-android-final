@@ -409,7 +409,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Integer i = v.getId();
         AddMember addMember = new AddMember();
-        addMember.add(str[i], null);
+        addMember.add(str[i], null, null);
         NavBarActivity.roomId = str[i];
         databaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -62,6 +62,9 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
     private FirebaseAuth firebaseAuth;
     public String userid;
 
+    private Fragment selectedFragment = null;
+    private String tag = "";
+
     private Location userLocation, destinationLocation;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -86,7 +89,7 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
                 if (!dataSnapshot.child("CurRoom").getValue().toString().equals("0")){
                     roomId = dataSnapshot.child("CurRoom").getValue().toString();
                     bottomNav.getMenu().getItem(1).setChecked(true);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new InsideRoomFragment(), "InsideRoom").commitAllowingStateLoss();
+                    bottomNav.setSelectedItemId(R.id.nav_room);
                 }else {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new TravelFragment(), "Travel").commitAllowingStateLoss();
                 }
@@ -101,37 +104,72 @@ public class NavBarActivity extends AppCompatActivity implements LocationListene
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                Fragment selectedFragment = null;
-                String tag = "";
 
                 switch (menuItem.getItemId()){
                     case R.id.nav_travel:
                         selectedFragment = new TravelFragment();
                         tag = "Travel";
+
+                        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
+                                selectedFragment, tag).commitAllowingStateLoss();
                         break;
                     case R.id.nav_room:
                         if (NavBarActivity.roomId == null){
                             selectedFragment = new NoRoomFragment();
                             tag = "";
+
+                            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
+                                    selectedFragment, tag).commitAllowingStateLoss();
                         }else{
-                            selectedFragment = new InsideRoomFragment();
-                            tag = "InsideRoom";
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("travel").child(roomId);
+                            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    selectedFragment = new PendingUserFragment();
+                                    tag = "PendingUser";
+                                    for(DataSnapshot data : dataSnapshot.child("users").getChildren()){
+                                        if (data.getValue().equals(user.getUid())){
+                                            selectedFragment = new InsideRoomFragment();
+                                            tag = "InsideRoom";
+                                        }
+                                    }
+
+                                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
+                                            selectedFragment, tag).commitAllowingStateLoss();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
                         break;
                     case R.id.nav_history:
                         selectedFragment = new HistoryFragment();
                         tag = "History";
+
+                        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
+                                selectedFragment, tag).commitAllowingStateLoss();
                         break;
                     case R.id.nav_Profile:
                         selectedFragment = new ProfileFragment();
                         tag = "Profile";
+
+                        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
+                                selectedFragment, tag).commitAllowingStateLoss();
                         break;
                 }
-
-                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
-                        selectedFragment, tag).commitAllowingStateLoss();
 
                 return true;
             }
