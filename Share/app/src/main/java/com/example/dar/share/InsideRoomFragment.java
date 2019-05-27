@@ -4,6 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +19,10 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -41,6 +47,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -188,6 +195,18 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new RatingFragment(), "Rating").commitAllowingStateLoss();
             }
         }
+
+//        databaseReference.child("messages").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                message();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         databaseReference.child("Available").addValueEventListener(new ValueEventListener() {
             @Override
@@ -666,6 +685,43 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         Intent intent_advance = new Intent(NavBarActivity.sContext, NotificationAdvance.class);
         PendingIntent pendingIntent_advance = PendingIntent.getBroadcast(NavBarActivity.sContext, 1, intent_advance, PendingIntent.FLAG_CANCEL_CURRENT);
         NavBarActivity.alarmManager_advance.cancel(pendingIntent_advance);
+    }
+
+    public void message(){
+        Vibrator vibrator = (Vibrator) NavBarActivity.sContext.getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(2000);
+
+        PowerManager powerManager = (PowerManager) NavBarActivity.sContext.getSystemService(Context.POWER_SERVICE);
+        @SuppressLint("InvalidWakeLockTag") PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "Tag");
+        wakeLock.acquire();
+        wakeLock.release();
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(NavBarActivity.sContext.getApplicationContext(), "notify_001");
+        Intent ii = new Intent(NavBarActivity.sContext.getApplicationContext(), NavBarActivity.class);
+        ii.putExtra("id", NavBarActivity.roomId);
+        ii.putExtra("status", "null");
+        ii.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(NavBarActivity.sContext, 1, ii, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        mBuilder.setContentIntent(pendingIntent);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setContentTitle("Almost time to go");
+        mBuilder.setContentText("It is almost time to go. Please be on the meeting place in 5 minutes");
+        mBuilder.setPriority(Notification.PRIORITY_MAX);
+        mBuilder.setAutoCancel(true);
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) NavBarActivity.sContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("notify_001",
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            mNotificationManager.createNotificationChannel(channel);
+        }
+
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
 }

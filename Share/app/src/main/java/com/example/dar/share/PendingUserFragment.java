@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -62,56 +63,70 @@ public class PendingUserFragment extends Fragment {
     }
 
     public void check(){
-        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data: dataSnapshot.getChildren()){
-                    if (data.getValue().toString().equals(user.getUid())){
-                        i = 1;
+
+        new CountDownTimer(3000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+
+                databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot data: dataSnapshot.getChildren()){
+                            if (data.getValue().toString().equals(user.getUid())){
+                                i = 1;
+                            }
+                        }
+
+                        if (i == 0){
+                            NavBarActivity.roomId = NavBarActivity.roomStatus = null;
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+                            ref.child("CurRoom").setValue("0");
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                            builder1.setMessage("The Leader decline your request");
+                            builder1.setCancelable(false);
+                            builder1.setPositiveButton(
+                                    "Okay",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            NavBarActivity.bottomNav.getMenu().getItem(0).setChecked(true);
+                                            NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_travel);
+                                            dialog.cancel();
+                                        }
+                                    });
+                            AlertDialog alert11 = builder1.create();
+                            alert11.show();
+                        }else{
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                            builder1.setMessage("The Leader accepted your request");
+                            builder1.setCancelable(false);
+                            builder1.setPositiveButton(
+                                    "Okay",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            NavBarActivity.bottomNav.getMenu().getItem(2).setChecked(true);
+                                            NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
+                                            dialog.cancel();
+                                        }
+                                    });
+                            AlertDialog alert11 = builder1.create();
+                            alert11.show();
+                        }
                     }
-                }
 
-                if (i == 0){
-                    NavBarActivity.roomId = NavBarActivity.roomStatus = null;
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-                    ref.child("CurRoom").setValue("0");
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
-                    builder1.setMessage("The Leader decline your request");
-                    builder1.setCancelable(false);
-                    builder1.setPositiveButton(
-                            "Okay",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    NavBarActivity.bottomNav.getMenu().getItem(0).setChecked(true);
-                                    NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_travel);
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert11 = builder1.create();
-                    alert11.show();
-                }else{
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
-                    builder1.setMessage("The Leader accepted your request");
-                    builder1.setCancelable(false);
-                    builder1.setPositiveButton(
-                            "Okay",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    NavBarActivity.bottomNav.getMenu().getItem(2).setChecked(true);
-                                    NavBarActivity.bottomNav.setSelectedItemId(R.id.nav_room);
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert11 = builder1.create();
-                    alert11.show();
-                }
-            }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
 
             }
-        });
+        }.start();
+
+
     }
 }
 
