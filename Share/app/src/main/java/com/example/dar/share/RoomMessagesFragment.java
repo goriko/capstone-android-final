@@ -62,6 +62,9 @@ public class RoomMessagesFragment extends Fragment {
         databaseReference.child("messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (RoomMessagesFragment.this.isVisible()){
+                    InsideRoomFragment.t = -1;
+                }
                 linearLayout.removeAllViews();
                 for (DataSnapshot data: dataSnapshot.getChildren()){
                     String dateString = data.child("Date").getValue().toString();

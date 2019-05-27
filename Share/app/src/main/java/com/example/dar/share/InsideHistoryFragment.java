@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class InsideHistoryFragment extends Fragment {
     private View rootView;
 
     private String Id;
+    private Integer temp = 0;
 
     private TextView textViewOrigin, textViewDestination, textViewDeparture, textViewTime, textViewFare, textViewPlateNum, textViewNum, textViewOperator;
     private ImageView imageView;
@@ -111,17 +113,27 @@ public class InsideHistoryFragment extends Fragment {
                 textViewOperator.setText(dataSnapshot.child("taxi").child("Operator").getValue().toString());
 
                 for(DataSnapshot data : dataSnapshot.child("users").getChildren()){
+                    for (DataSnapshot d: dataSnapshot.child("rated").getChildren()){
+                        if (d.getKey().toString().equals(data.getValue().toString())){
+                            for (DataSnapshot da: dataSnapshot.child("rated").child(d.getKey().toString()).getChildren()){
+                                if (da.child("UserId").getValue().toString().equals(user.getUid())){
+                                    temp = 1;
+                                }
+                            }
+                        }
+                    }
+
+                    LinearLayout linearLayout1 = new LinearLayout(NavBarActivity.sContext);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    linearLayout1.setLayoutParams(layoutParams);
+                    linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
+                    linearLayout1.setPadding(0, 0, 0, dp(10));
+
                     DatabaseReference ref;
                     ref = FirebaseDatabase.getInstance().getReference("users").child(data.getValue().toString());
                     ref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            LinearLayout linearLayout1 = new LinearLayout(NavBarActivity.sContext);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                            linearLayout1.setLayoutParams(layoutParams);
-                            linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
-                            linearLayout1.setPadding(0, 0, 0, dp(10));
-
                             ImageView imageView = new ImageView(NavBarActivity.sContext);
                             LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(dp(36), dp(36));
                             imageView.setLayoutParams(layoutParams2);
@@ -160,12 +172,29 @@ public class InsideHistoryFragment extends Fragment {
 
                             linearLayout1.addView(imageView);
                             linearLayout1.addView(textView);
-                            linearLayout.addView(linearLayout1);
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
+
+                    if (temp == 0){
+                        if (!data.getValue().toString().equals(user.getUid())){
+                            Button button = new Button(NavBarActivity.sContext);
+                            LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            button.setLayoutParams(layoutParams3);
+                            button.setText("RATE");
+                            //button.setId(x);
+                            //ID[x] = data.getValue().toString();
+                            //button.setOnClickListener(InsideRoomFragment.this);
+                            linearLayout1.addView(button);
+                            //x++;
+                        }
+                    }else{
+                        temp = 0;
+                    }
+
+                    linearLayout.addView(linearLayout1);
                 }
 
                 for (DataSnapshot data : dataSnapshot.child("Guests").getChildren()) {

@@ -79,6 +79,7 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
     private String origin, destination, stringTime, travelTime, fare;
     private String[] ID = new String[4];
     private Integer leader = 0, x = 0, removed = 0, kick = 0;
+    public static Integer t = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,34 +110,46 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()){
                                 for (DataSnapshot data: dataSnapshot.getChildren()){
-                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
-                                    builder1.setMessage("___ has requested to join the room");
-                                    builder1.setCancelable(true);
-                                    builder1.setPositiveButton(
-                                            "Accept",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    AddMember addMember = new AddMember();
-                                                    addMember.add(NavBarActivity.roomId, null, data.child("UserId").getValue().toString());
-                                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId).child("pendingusers");
-                                                    ref.child(data.getKey()).removeValue();
+                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(data.child("UserId").getValue().toString());
+                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                                            builder1.setMessage(dataSnapshot.child("Fname").getValue().toString()+ " " + dataSnapshot.child("Lname").getValue().toString() + " has requested to join the room");
+                                            builder1.setCancelable(false);
+                                            builder1.setPositiveButton(
+                                                    "Accept",
+                                                    new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int id) {
+                                                            AddMember addMember = new AddMember();
+                                                            addMember.add(NavBarActivity.roomId, null, data.child("UserId").getValue().toString());
+                                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId).child("pendingusers");
+                                                            ref.child(data.getKey()).removeValue();
 
-                                                    dialog.cancel();
-                                                }
-                                            });
-                                    builder1.setNegativeButton(
-                                            "Decline",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Log.d("EYY",data.getKey());
-                                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId).child("pendingusers");
-                                                    ref.child(data.getKey()).removeValue();
+                                                            dialog.cancel();
+                                                        }
+                                                    });
+                                            builder1.setNegativeButton(
+                                                    "Decline",
+                                                    new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int id) {
+                                                            Log.d("EYY",data.getKey());
+                                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("travel").child(NavBarActivity.roomId).child("pendingusers");
+                                                            ref.child(data.getKey()).removeValue();
 
-                                                    dialog.cancel();
-                                                }
-                                            });
-                                    AlertDialog alert11 = builder1.create();
-                                    alert11.show();
+                                                            dialog.cancel();
+                                                        }
+                                                    });
+                                            AlertDialog alert11 = builder1.create();
+                                            alert11.show();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
                                 }
                             }
                         }
@@ -196,17 +209,23 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
             }
         }
 
-//        databaseReference.child("messages").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                message();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+        databaseReference.child("messages").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (t == 1){
+                    if (InsideRoomFragment.this.isVisible()){
+                        message();
+                    }
+                }else{
+                    t++;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         databaseReference.child("Available").addValueEventListener(new ValueEventListener() {
             @Override
@@ -697,16 +716,14 @@ public class InsideRoomFragment extends Fragment implements View.OnClickListener
         wakeLock.release();
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(NavBarActivity.sContext.getApplicationContext(), "notify_001");
-        Intent ii = new Intent(NavBarActivity.sContext.getApplicationContext(), NavBarActivity.class);
-        ii.putExtra("id", NavBarActivity.roomId);
-        ii.putExtra("status", "null");
+        Intent ii = new Intent(NavBarActivity.sContext.getApplicationContext(), RoomMessagesFragment.class);
         ii.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(NavBarActivity.sContext, 1, ii, PendingIntent.FLAG_CANCEL_CURRENT);
 
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
-        mBuilder.setContentTitle("Almost time to go");
-        mBuilder.setContentText("It is almost time to go. Please be on the meeting place in 5 minutes");
+        mBuilder.setContentTitle("New Message Recieved");
+        mBuilder.setContentText("A new messaged has been recieved. Click to see it.");
         mBuilder.setPriority(Notification.PRIORITY_MAX);
         mBuilder.setAutoCancel(true);
 
