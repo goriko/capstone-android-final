@@ -184,11 +184,16 @@ public class InsideHistoryFragment extends Fragment {
                             LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                             button.setLayoutParams(layoutParams3);
                             button.setText("RATE");
-                            //button.setId(x);
-                            //ID[x] = data.getValue().toString();
-                            //button.setOnClickListener(InsideRoomFragment.this);
+
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Fragment fragment = new RateUserFragment(data.getValue().toString(), Id);
+                                    replaceFragment(fragment);
+                                }
+                            });
+
                             linearLayout1.addView(button);
-                            //x++;
                         }
                     }else{
                         temp = 0;
